@@ -1,99 +1,334 @@
-# partner/views.py
-from datetime import timedelta
-from django.utils import timezone
-
-from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import PartnerOnboardingLink, Product, Testimonial, PartnerProfile
-from .serializers import (
-    PartnerOnboardingLinkSerializer, ProductSerializer, TestimonialSerializer, 
-    PartnerProfileSerializer, PartnerProfileLiteSerializer
-)
-from rest_framework.permissions import AllowAny
-from django.db.models import Count, Sum, Q, F
+from django.db.models import Count, Sum, Case, When, F, IntegerField
+from django.utils import timezone
+from datetime import timedelta
+from rest_framework import viewsets, status, permissions  # Ensure permissions is imported
 import secrets
-from partner import models
-from django.db.models.functions import TruncMonth
-import logging
-logger = logging.getLogger(__name__)
+from .models import PartnerOnboardingLink, PartnerProfile, Product
+from .serializers import PartnerOnboardingLinkSerializer, PartnerProfileSerializer, PartnerDetailSerializer
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 25
-    page_size_query_param = 'page_size'
-    max_page_size = 100
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category', 'type', 'is_active', 'exclusive']
-    search_fields = ['name', 'title', 'description']
-    ordering_fields = ['created_at', 'price', 'commission']
+class PartnerViewSet(viewsets.ModelViewSet):
+    queryset = PartnerProfile.objects.all()
+    serializer_class = PartnerProfileSerializer
     
     def get_queryset(self):
-        queryset = super().get_queryset()
+        """
+        Customize the queryset to include calculated fields needed for the frontend
+        """
+        queryset = PartnerProfile.objects.select_related('user').prefetch_related(
+            'user__referrals', 
+            'selected_products'
+        ).annotate(
+    total_referrals_count=Count('user__referrals'),
+    converted_referrals_count=Count(
+        Case(
+            When(user__referrals__status='converted', then=1),
+            output_field=IntegerField()
+        )
+    )
+)
+
         
-        # Filter by partner if requested
-        partner_id = self.request.query_params.get('partner_id')
-        if partner_id:
-            queryset = queryset.filter(partners__id=partner_id)
-            
+        # Add calculated fields for earnings (adjust as needed based on your models)
+        # Assuming the earnings model has a partner field related to PartnerProfile
+        if hasattr(self, 'earnings'):
+            queryset = queryset.annotate(
+                total_earnings=Sum(
+                    Case(
+                        When(earnings__status__in=['available', 'paid'], then=F('earnings__amount')),
+                        default=0,
+                        output_field=IntegerField()
+                    )
+                ),
+                available_earnings=Sum(
+                    Case(
+                        When(earnings__status='available', then=F('earnings__amount')),
+                        default=0,
+                        output_field=IntegerField()
+                    )
+                ),
+                pending_earnings=Sum(
+                    Case(
+                        When(earnings__status='pending', then=F('earnings__amount')),
+                        default=0,
+                        output_field=IntegerField()
+                    )
+                )
+            )
+        
         return queryset
     
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Return product statistics"""
-        stats = {
-            'total_products': Product.objects.count(),
-            'active_products': Product.objects.filter(is_active=True).count(),
-            'categories': Product.objects.values('category').annotate(count=Count('id')),
-            'avg_commission': Product.objects.aggregate(avg=models.Avg('commission'))['avg']
+    def list(self, request):
+        """
+        Override list method to return partner profiles in the format needed by the frontend
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # Add conversion_rate calculation where needed
+        partners_data = serializer.data
+        for partner in partners_data:
+            total_referrals = partner.get('total_referrals', 0)
+            converted_referrals = partner.get('converted_referrals', 0)
+            
+            if total_referrals > 0:
+                partner['conversion_rate'] = round((converted_referrals / total_referrals) * 100)
+            else:
+                partner['conversion_rate'] = 0
+        
+        return Response(partners_data)
+    
+    def retrieve(self, request, pk=None):
+        """
+        Override retrieve method to return detailed partner data
+        """
+        try:
+            partner = self.get_object()
+        except:
+            return Response({"error": "Partner not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get basic partner profile data
+        serializer = PartnerDetailSerializer(partner)
+        partner_data = serializer.data
+        
+        # Get all converted referrals (unsliced)
+        converted_referrals = partner.user.referrals.filter(status='converted')
+        
+        # Calculate total commission from all converted referrals
+        total_commission = converted_referrals.aggregate(
+            total=Sum('actual_commission')
+        )['total'] or 0
+        
+        # Get all referrals for calculations (unsliced)
+        all_referrals = partner.user.referrals.all()
+        
+        # Get recent referrals for display (collect data before slicing)
+        recent_referrals_data = list(all_referrals.order_by('-date_submitted')[:10].values(
+            'id', 'client_name', 'date_submitted', 'expected_implementation_date',
+            'status', 'potential_commission', 'actual_commission', 'product__name'
+        ))
+        
+        # Now, calculate the referrals by product and other details
+        referrals_by_product = []
+        for product in partner.selected_products.all():
+            # Work with unsliced querysets for calculations
+            product_referrals = all_referrals.filter(product=product)
+            converted_count = product_referrals.filter(status='converted').count()
+            total_count = product_referrals.count()
+            conversion_rate = 0
+            if total_count > 0:
+                conversion_rate = round((converted_count / total_count) * 100)
+
+            referrals_by_product.append({
+                'product_name': product.name,
+                'count': total_count,
+                'conversion_rate': conversion_rate,
+                'total_commission': product_referrals.filter(status='converted').aggregate(
+                    total=Sum('actual_commission')
+                )['total'] or 0
+            })
+
+        # Get earnings data (adjust based on your models)
+        recent_earnings = []
+        earnings_by_month = []
+        
+        # Assuming you have an Earnings model with these fields
+        if hasattr(partner, 'earnings'):
+            recent_earnings = list(partner.earnings.all().order_by('-created_at')[:10].values(
+                'id', 'amount', 'status', 'created_at', 'source'
+            ))
+            
+            # Calculate earnings by month for the last 6 months
+            six_months_ago = timezone.now() - timedelta(days=180)
+            monthly_earnings = partner.earnings.filter(
+                created_at__gte=six_months_ago
+            ).values(
+                'created_at__year', 'created_at__month'
+            ).annotate(
+                year=F('created_at__year'),
+                month=F('created_at__month'),
+                amount=Sum('amount'),
+                referrals_count=Count('referral', distinct=True)
+            ).order_by('year', 'month')
+            
+            for month_data in monthly_earnings:
+                # Convert month number to name
+                month_name = {
+                    1: 'January', 2: 'February', 3: 'March', 4: 'April', 
+                    5: 'May', 6: 'June', 7: 'July', 8: 'August',
+                    9: 'September', 10: 'October', 11: 'November', 12: 'December'
+                }.get(month_data['month'], 'Unknown')
+                
+                earnings_by_month.append({
+                    'month': month_name,
+                    'year': month_data['year'],
+                    'amount': month_data['amount'],
+                    'referrals_count': month_data['referrals_count']
+                })
+        
+        # Calculate metrics
+        metrics = {
+            'available_earnings': partner_data.get('available_earnings', 0),
+            'pending_earnings': partner_data.get('pending_earnings', 0),
+            'total_earnings': partner_data.get('total_earnings', 0),
+            'total_referrals': partner_data.get('total_referrals', 0),
+            'referral_status_counts': {
+                'converted': {
+                    'count': partner_data.get('converted_referrals', 0),
+                    'total_commission': converted_referrals.aggregate(  # Use the unsliced queryset
+                        total=Sum('actual_commission')
+                    )['total'] or 0
+                },
+                'pending': {
+                    'count': all_referrals.filter(status='pending').count(),  # Use a direct filter
+                    'total_commission': all_referrals.filter(status='pending').aggregate(
+                        total=Sum('potential_commission')
+                    )['total'] or 0
+                }
+            }
         }
-        return Response(stats)
-
-class TestimonialViewSet(viewsets.ModelViewSet):
-    queryset = Testimonial.objects.all()
-    serializer_class = TestimonialSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['type', 'is_approved']
-    search_fields = ['author', 'content', 'company']
-    
-    def get_queryset(self):
-        queryset = super().get_queryset()
         
-        # Filter by partner if requested
-        partner_id = self.request.query_params.get('partner_id')
-        if partner_id:
-            queryset = queryset.filter(partners__id=partner_id)
+        # Construct the response data
+        response_data = {
+            'partner': partner_data,
+            'referrals': {
+                'recent': recent_referrals_data,
+                'by_product': referrals_by_product
+            },
+            'earnings': {
+                'recent': recent_earnings,
+                'by_month': earnings_by_month
+            },
+            'metrics': metrics
+        }
+        
+        # Format the data for the frontend
+        # Convert field names to match frontend expectations
+        for referral in response_data['referrals']['recent']:
+            referral['dateSubmitted'] = referral.pop('date_submitted')
+            referral['clientName'] = referral.pop('client_name')
+            referral['expectedImplementationDate'] = referral.pop('expected_implementation_date')
+            referral['potentialCommission'] = referral.pop('potential_commission')
+            referral['actualCommission'] = referral.pop('actual_commission')
+            referral['product'] = referral.pop('product__name')
             
-        return queryset
+            # Add status display
+            status_mapping = {
+                'pending': 'Pending',
+                'contacted': 'Contacted',
+                'qualified': 'Qualified',
+                'converted': 'Converted',
+                'rejected': 'Rejected'
+            }
+            referral['statusDisplay'] = status_mapping.get(referral['status'], referral['status'].capitalize())
+        
+        for earning in response_data['earnings']['recent']:
+            earning['requestDate'] = earning.pop('created_at')
+        
+        return Response(response_data)
+    
+    @action(detail=False, methods=['get'], url_path='dashboard')
+    def dashboard(self, request):
+        """
+        Custom endpoint to get dashboard statistics
+        """
+        total_partners = PartnerProfile.objects.count()
+        
+        # New partners this month
+        current_month = timezone.now().month
+        current_year = timezone.now().year
+        new_partners_this_month = PartnerProfile.objects.filter(
+            created_at__month=current_month,
+            created_at__year=current_year
+        ).count()
+        
+        # Average conversion rate
+        # This calculation depends on your specific data model
+        # This is a simplified version
+        partners_with_referrals = PartnerProfile.objects.annotate(
+            total_refs=Count('user__referrals'),
+            converted_refs=Count(
+                Case(
+                    When(user__referrals__status='converted', then=1),
+                    output_field=IntegerField()
+                )
+            )
+        ).filter(total_refs__gt=0)
+        
+        total_conversion_rate = 0
+        partners_count = partners_with_referrals.count()
+        
+        if partners_count > 0:
+            for partner in partners_with_referrals:
+                if partner.total_refs > 0:
+                    partner_rate = (partner.converted_refs / partner.total_refs) * 100
+                    total_conversion_rate += partner_rate
+                    
+            average_conversion_rate = round(total_conversion_rate / partners_count)
+        else:
+            average_conversion_rate = 0
+        
+        # Total earnings
+        # Adjust based on your data model
+        total_earnings = 0
+        
+        # Status breakdown
+        status_breakdown = {
+            status_choice[0]: PartnerProfile.objects.filter(status=status_choice[0]).count()
+            for status_choice in PartnerProfile.Status.choices
+        }
+        
+        # Partner growth (last 6 months)
+        months = []
+        partner_counts = []
+        
+        for i in range(5, -1, -1):
+            month_date = timezone.now() - timedelta(days=30 * i)
+            month_name = month_date.strftime('%b')
+            months.append(month_name)
+            
+            # Count partners created until that month
+            count = PartnerProfile.objects.filter(
+                created_at__lte=month_date
+            ).count()
+            partner_counts.append(count)
+        
+        partner_growth = {
+            'labels': months,
+            'data': partner_counts
+        }
+        
+        stats = {
+            'totalPartners': total_partners,
+            'newPartnersThisMonth': new_partners_this_month,
+            'averageConversionRate': average_conversion_rate,
+            'totalEarnings': total_earnings,
+            'statusBreakdown': status_breakdown,
+            'partnerGrowth': partner_growth
+        }
+        
+        return Response(stats)
     
     @action(detail=True, methods=['post'])
-    def approve(self, request, pk=None):
-        testimonial = self.get_object()
-        testimonial.is_approved = True
-        testimonial.save()
-        serializer = self.get_serializer(testimonial)
-        return Response(serializer.data)
+    def update_status(self, request, pk=None):
+        """
+        Endpoint to update partner status
+        """
+        partner = self.get_object()
+        new_status = request.data.get('status')
+        
+        if new_status not in [status[0] for status in PartnerProfile.Status.choices]:
+            return Response(
+                {"error": f"Invalid status. Choose from {[status[0] for status in PartnerProfile.Status.choices]}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        partner.status = new_status
+        partner.save()
+        
+        return Response(self.get_serializer(partner).data)
     
-    @action(detail=True, methods=['post'])
-    def reject(self, request, pk=None):
-        testimonial = self.get_object()
-        testimonial.is_approved = False
-        testimonial.save()
-        serializer = self.get_serializer(testimonial)
-        return Response(serializer.data)
-
-
-
-
 class PartnerOnboardingLinkViewSet(viewsets.ModelViewSet):
     queryset = PartnerOnboardingLink.objects.all()
     serializer_class = PartnerOnboardingLinkSerializer
@@ -138,329 +373,3 @@ class PartnerOnboardingLinkViewSet(viewsets.ModelViewSet):
         link.expires_at = link.expires_at + timedelta(days=days)
         link.save()
         return Response({'status': 'link extended', 'new_expiry': link.expires_at})
-
-    
-class PartnerProfileViewSet(viewsets.ModelViewSet):
-    queryset = PartnerProfile.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'theme']
-    search_fields = ['name', 'email', 'company', 'bio']
-    ordering_fields = ['created_at', 'name', 'generated_revenue', 'user__referrals__count']
-    serializer_class = PartnerProfileSerializer
-    
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return PartnerProfileLiteSerializer
-        return PartnerProfileSerializer
-    
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        
-        # Filter by product if requested
-        product_id = self.request.query_params.get('product_id')
-        if product_id:
-            queryset = queryset.filter(selected_products__id=product_id)
-            
-        # Advanced filtering
-        min_referrals = self.request.query_params.get('min_referrals')
-        if min_referrals:
-            queryset = queryset.annotate(
-                referral_count=Count('user__referrals')
-            ).filter(referral_count__gte=int(min_referrals))
-            
-        return queryset
-    
-    @action(detail=False, methods=['post'])
-    def create_via_link(self, request):
-        """
-        Create partner profile via onboarding link
-        """
-        token = request.data.get('token')
-        if not token:
-            return Response({'error': 'Token is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            link = PartnerOnboardingLink.objects.get(
-                token=token,
-                is_active=True,
-                expires_at__gte=timezone.now()
-            )
-        except PartnerOnboardingLink.DoesNotExist:
-            return Response({'error': 'Invalid or expired onboarding link'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Check if user already has a partner profile
-        if PartnerProfile.objects.filter(user=request.user).exists():
-            return Response({'error': 'You already have a partner profile'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Create the partner profile
-        serializer = self.get_serializer(data={
-            **request.data,
-            'user': request.user.id,
-            'status': 'pending',
-            'referral_code': self._generate_referral_code(),
-        })
-        
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        
-        # Update the onboarding link
-        link.used_by = request.user
-        link.used_at = timezone.now()
-        link.save()
-        
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
-    def _generate_referral_code(self):
-        """Generate a unique referral code"""
-        while True:
-            code = secrets.token_urlsafe(8)[:8].upper()
-            if not PartnerProfile.objects.filter(referral_code=code).exists():
-                return code
-            
-    @action(detail=False, methods=['get'], url_path='by-referral/(?P<referral_code>[^/.]+)', permission_classes=[AllowAny])
-    def by_referral(self, request, referral_code=None):
-        try:
-            profile = PartnerProfile.objects.get(referral_code=referral_code)
-            serializer = self.get_serializer(profile)
-            return Response(serializer.data)
-        except PartnerProfile.DoesNotExist:
-            return Response({"error": "Partner profile not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-    @action(detail=False, methods=['get'])
-    def validate_onboarding_link(self, request):
-        """
-        Validate an onboarding link token
-        """
-        token = request.query_params.get('token')
-        if not token:
-            return Response({'error': 'Token is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            link = PartnerOnboardingLink.objects.get(
-                token=token,
-                is_active=True,
-                expires_at__gte=timezone.now()
-            )
-            return Response({
-                'valid': True,
-                'expires_at': link.expires_at,
-                'created_by': link.created_by.username,
-                'notes': link.notes
-            })
-        except PartnerOnboardingLink.DoesNotExist:
-            return Response({'valid': False}, status=status.HTTP_200_OK)
-
-    
-    @action(detail=False, methods=['get'])
-    def my_profile(self, request):
-        # Check if the user is an admin
-        user = request.user
-        if user.is_staff:  # Assuming 'is_staff' means the user is an admin
-            # Admin users can see all partner profiles
-            partners = PartnerProfile.objects.all()
-            serializer = PartnerProfileSerializer(partners, many=True)
-            return Response(serializer.data)
-        else:
-            # If not an admin, return only the current user's profile
-            try:
-                partner = PartnerProfile.objects.get(user=user)
-                serializer = self.get_serializer(partner)
-                return Response(serializer.data)
-            except PartnerProfile.DoesNotExist:
-                return Response(
-                    {'error': 'Partner profile not found for this user'}, 
-                    status=status.HTTP_404_NOT_FOUND
-                )
-    
-    @action(detail=False, methods=['get'])
-    def dashboard(self, request, pk=None):
-        """Get dashboard data for the authenticated partner or all partners if admin"""
-        try:
-            user = request.user
-
-            from referrals_management.models import Referral
-            from payouts.models import Earnings
-
-            if user.is_staff:  # Admin view: all partners
-                partners = PartnerProfile.objects.all()
-                dashboard_data = []
-
-                for partner in partners:
-                    referrals = Referral.objects.filter(partner=partner).select_related('product')
-                    earnings = Earnings.objects.filter(partner=partner)
-
-                    referral_status_counts = referrals.values('status').annotate(
-                        count=Count('id'),
-                        total_commission=Sum('actual_commission')
-                    )
-
-                    earnings_summary = earnings.aggregate(
-                        total=Sum('amount', filter=~Q(status='cancelled')),
-                        available=Sum('amount', filter=Q(status='available')),
-                        pending=Sum('amount', filter=Q(status='pending'))
-                    )
-
-                    dashboard_data.append({
-                        'partner': PartnerProfileLiteSerializer(partner).data,
-                        'metrics': {
-                            'total_referrals': referrals.count(),
-                            'referral_status_counts': {
-                                item['status']: {
-                                    'count': item['count'],
-                                    'total_commission': item['total_commission'] or 0
-                                } 
-                                for item in referral_status_counts
-                            },
-                            'total_earnings': earnings_summary['total'] or 0,
-                            'available_earnings': earnings_summary['available'] or 0,
-                            'pending_earnings': earnings_summary['pending'] or 0,
-                        },
-                        'referrals': {
-                            'recent': referrals.order_by('-date_submitted')[:5].values(
-                                'id', 'client_name', 'status', 'date_submitted',
-                                'expected_implementation_date',
-                                'potential_commission', 'actual_commission', 'product__name'
-                            ),
-                            'by_product': referrals.exclude(product__isnull=True).values(
-                                'product__name'
-                            ).annotate(
-                                count=Count('id'),
-                                converted=Count('id', filter=Q(status='converted')),
-                                total_commission=Sum('actual_commission')
-                            ).order_by('-count')
-                        },
-                        'earnings': {
-                            'recent': earnings.order_by('-date')[:5].values(
-                                'id', 'amount', 'date', 'source', 'status', 'referral__client_name'
-                            ),
-                            'by_month': earnings.exclude(status='cancelled').annotate(
-                                month=TruncMonth('date')
-                            ).values('month').annotate(
-                                sum=Sum('amount'),
-                                count=Count('id')
-                            ).order_by('month')
-                        }
-                    })
-
-                return Response(dashboard_data)
-
-            else:
-                # Partner-specific dashboard
-                partner = PartnerProfile.objects.select_related('user').get(user=user)
-                referrals = Referral.objects.filter(partner=partner).select_related('product')
-                earnings = Earnings.objects.filter(partner=partner)
-
-                referral_status_counts = referrals.values('status').annotate(
-                    count=Count('id'),
-                    total_commission=Sum('actual_commission')
-                )
-
-                earnings_summary = earnings.aggregate(
-                    total=Sum('amount', filter=~Q(status='cancelled')),
-                    available=Sum('amount', filter=Q(status='available')),
-                    pending=Sum('amount', filter=Q(status='pending'))
-                )
-
-                dashboard_data = {
-                    'partner': PartnerProfileLiteSerializer(partner).data,
-                    'metrics': {
-                        'total_referrals': referrals.count(),
-                        'referral_status_counts': {
-                            item['status']: {
-                                'count': item['count'],
-                                'total_commission': item['total_commission'] or 0
-                            } 
-                            for item in referral_status_counts
-                        },
-                        'total_earnings': earnings_summary['total'] or 0,
-                        'available_earnings': earnings_summary['available'] or 0,
-                        'pending_earnings': earnings_summary['pending'] or 0,
-                    },
-                    'referrals': {
-                        'recent': referrals.order_by('-date_submitted')[:5].values(
-                            'id', 'client_name', 'status', 'date_submitted',
-                            'expected_implementation_date',
-                            'potential_commission', 'actual_commission', 'product__name'
-                        ),
-                        'by_product': referrals.exclude(product__isnull=True).values(
-                            'product__name'
-                        ).annotate(
-                            count=Count('id'),
-                            converted=Count('id', filter=Q(status='converted')),
-                            total_commission=Sum('actual_commission')
-                        ).order_by('-count')
-                    },
-                    'earnings': {
-                        'recent': earnings.order_by('-date')[:5].values(
-                            'id', 'amount', 'date', 'source', 'status', 'referral__client_name'
-                        ),
-                        'by_month': earnings.exclude(status='cancelled').annotate(
-                            month=TruncMonth('date')
-                        ).values('month').annotate(
-                            sum=Sum('amount'),
-                            count=Count('id')
-                        ).order_by('month')
-                    }
-                }
-
-                return Response(dashboard_data)
-
-        except PartnerProfile.DoesNotExist:
-            return Response(
-                {'error': 'Partner profile not found for this user'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            logger.exception("Failed to fetch dashboard")
-            return Response(
-                {'error': 'Unable to fetch dashboard data'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-
-    
-    @action(detail=True, methods=['post'])
-    def update_status(self, request, pk=None):
-        partner = self.get_object()
-        new_status = request.data.get('status')
-        
-        if new_status not in dict(PartnerProfile.Status.choices).keys():
-            return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        partner.status = new_status
-        partner.save()
-        serializer = self.get_serializer(partner)
-        return Response(serializer.data)
-    
-    @action(detail=True, methods=['post'])
-    def add_products(self, request, pk=None):
-        partner = self.get_object()
-        product_ids = request.data.get('product_ids', [])
-        
-        if not product_ids:
-            return Response({'error': 'No product IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Get products and add to partner
-        products = Product.objects.filter(id__in=product_ids)
-        partner.selected_products.add(*products)
-        
-        serializer = self.get_serializer(partner)
-        return Response(serializer.data)
-    
-    @action(detail=True, methods=['post'])
-    def remove_products(self, request, pk=None):
-        partner = self.get_object()
-        product_ids = request.data.get('product_ids', [])
-        
-        if not product_ids:
-            return Response({'error': 'No product IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Get products and remove from partner
-        products = Product.objects.filter(id__in=product_ids)
-        partner.selected_products.remove(*products)
-        
-        serializer = self.get_serializer(partner)
-        return Response(serializer.data)

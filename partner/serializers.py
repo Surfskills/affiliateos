@@ -1,112 +1,76 @@
 from rest_framework import serializers
-from .models import PartnerOnboardingLink, Product, Testimonial, PartnerProfile
-from authentication.models import User
-from rest_framework import serializers
-from .models import PartnerOnboardingLink, Product, Testimonial, PartnerProfile
-
+from .models import PartnerOnboardingLink, PartnerProfile, Product, Testimonial
 
 class ProductSerializer(serializers.ModelSerializer):
-    total_referrals = serializers.ReadOnlyField()
-    converted_referrals = serializers.ReadOnlyField()
-    conversion_rate = serializers.ReadOnlyField()
-
     class Meta:
         model = Product
-        fields = '__all__'
-
+        fields = [
+            'id', 'title', 'name', 'description', 'commission', 'price',
+            'image', 'delivery_time', 'support_duration', 'exclusive',
+            'category', 'type', 'is_active'
+        ]
 
 class TestimonialSerializer(serializers.ModelSerializer):
-    type_display = serializers.CharField(source='get_type_display', read_only=True)
-    imageUrl = serializers.SerializerMethodField()
-    videoUrl = serializers.SerializerMethodField()
-
     class Meta:
         model = Testimonial
         fields = [
-            'id', 'content', 'author', 'role', 'company', 'created_at',
-            'type', 'type_display', 'imageUrl', 'videoUrl'
+            'id', 'content', 'author', 'role', 'company', 'type',
+            'image', 'video', 'is_approved'
         ]
 
-    def get_imageUrl(self, obj):
-        request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url'):
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
-
-    def get_videoUrl(self, obj):
-        request = self.context.get('request')
-        if obj.video and hasattr(obj.video, 'url'):
-            return request.build_absolute_uri(obj.video.url) if request else obj.video.url
-        return None
-
-
 class PartnerProfileSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
-    theme_display = serializers.CharField(source='get_theme_display', read_only=True)
+    # Add calculated fields that match frontend expectations
+    total_referrals = serializers.IntegerField(read_only=True)
+    converted_referrals = serializers.IntegerField(read_only=True)
+    total_earnings = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    available_earnings = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    pending_earnings = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    status_display = serializers.SerializerMethodField()
+    conversion_rate = serializers.SerializerMethodField()
     
-    selected_products = ProductSerializer(many=True, read_only=True)
-    text_testimonials = serializers.SerializerMethodField()
-    image_testimonials = serializers.SerializerMethodField()
-    video_testimonials = serializers.SerializerMethodField()
-
-    total_referrals = serializers.ReadOnlyField()
-    pending_referrals = serializers.ReadOnlyField()
-    converted_referrals = serializers.ReadOnlyField()
-    conversion_rate = serializers.ReadOnlyField()
-    available_earnings = serializers.ReadOnlyField()
-    pending_earnings = serializers.ReadOnlyField()
-    total_earnings = serializers.ReadOnlyField()
-
-    profile_photo_url = serializers.SerializerMethodField()
-    social_links = serializers.SerializerMethodField()
-
+    # Rename fields to match frontend expectations
+    profilePhotoFile = serializers.SerializerMethodField()
+    createdAt = serializers.DateTimeField(source='created_at', read_only=True)
+    
     class Meta:
         model = PartnerProfile
-        fields = '__all__'
-        read_only_fields = ['referral_code', 'referral_link', 'slug']
-
-    def get_text_testimonials(self, obj):
-        return TestimonialSerializer(
-            obj.testimonials.filter(type='text', is_approved=True),
-            many=True,
-            context=self.context
-        ).data
-
-    def get_image_testimonials(self, obj):
-        return TestimonialSerializer(
-            obj.testimonials.filter(type='image', is_approved=True),
-            many=True,
-            context=self.context
-        ).data
-
-    def get_video_testimonials(self, obj):
-        return TestimonialSerializer(
-            obj.testimonials.filter(type='video', is_approved=True),
-            many=True,
-            context=self.context
-        ).data
-
-    def get_profile_photo_url(self, obj):
-        request = self.context.get('request')
-        if obj.profile_photo and hasattr(obj.profile_photo, 'url'):
-            return request.build_absolute_uri(obj.profile_photo.url) if request else obj.profile_photo.url
+        fields = [
+            'id', 'status', 'status_display', 'name', 'email', 'phone',
+            'company', 'role', 'bio', 'profilePhotoFile', 'referral_code',
+            'referral_link', 'twitter', 'linkedin', 'instagram',
+            'happy_clients', 'years_experience', 'generated_revenue',
+            'support_availability', 'theme', 'slug', 'createdAt',
+            'bank_details', 'last_login', 'two_factor_enabled',
+            'total_referrals', 'converted_referrals', 'conversion_rate',
+            'total_earnings', 'available_earnings', 'pending_earnings'
+        ]
+    
+    def get_status_display(self, obj):
+        return dict(PartnerProfile.Status.choices).get(obj.status)
+    
+    def get_profilePhotoFile(self, obj):
+        if obj.profile_photo:
+            return obj.profile_photo.url
         return None
+    
+    def get_conversion_rate(self, obj):
+        total = getattr(obj, 'total_referrals', 0)
+        converted = getattr(obj, 'converted_referrals', 0)
+        
+        if total > 0:
+            return round((converted / total) * 100)
+        return 0
 
-    def get_social_links(self, obj):
-        return {
-            "twitter": obj.twitter,
-            "linkedin": obj.linkedin,
-            "instagram": obj.instagram
-        }
-class PartnerProfileLiteSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for list views"""
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+class PartnerDetailSerializer(PartnerProfileSerializer):
+    """
+    Extended serializer with additional fields for detailed view
+    """
+    selected_products = ProductSerializer(many=True, read_only=True)
+    testimonials = TestimonialSerializer(many=True, read_only=True)
+    
+    class Meta(PartnerProfileSerializer.Meta):
+        fields = PartnerProfileSerializer.Meta.fields + ['selected_products', 'testimonials']
 
-    class Meta:
-        model = PartnerProfile
-        fields ='__all__'
-        read_only_fields = ['referral_code', 'slug']
 
 
 class PartnerOnboardingLinkSerializer(serializers.ModelSerializer):

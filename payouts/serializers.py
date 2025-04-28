@@ -1,7 +1,9 @@
 # payouts/serializers.py
 from rest_framework import serializers
+
+from partner.serializers import PartnerProfileSerializer
 from .models import Payout, PayoutReferral, PayoutSetting, Earnings
-from partner.serializers import PartnerProfileLiteSerializer
+
 from referrals_management.serializers import ReferralListSerializer
 from django.db.transaction import atomic
 
@@ -16,7 +18,7 @@ class PayoutReferralSerializer(serializers.ModelSerializer):
 class PayoutSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
-    partner_details = PartnerProfileLiteSerializer(source='partner', read_only=True)
+    partner_details = PartnerProfileSerializer(source='partner', read_only=True)
     referrals = PayoutReferralSerializer(many=True, read_only=True)
     processed_by_name = serializers.SerializerMethodField()
     

@@ -13946,3 +13946,400 @@ WARNING 2025-04-28 15:26:11,864 log 42658 6142341120 Unauthorized: /api/referral
 WARNING 2025-04-28 15:26:11,864 log 42658 6125514752 Unauthorized: /api/referrals/
 WARNING 2025-04-28 15:26:11,869 log 42658 6142341120 Unauthorized: /api/referrals/
 WARNING 2025-04-28 15:26:11,872 log 42658 6159167488 Unauthorized: /api/referrals/stats/
+ERROR 2025-04-28 17:35:32,547 log 44201 6121861120 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 243, in get
+    return self.list(request, *args, **kwargs)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 42, in list
+    serializer = self.get_serializer(page, many=True)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 112, in get_serializer
+    serializer_class = self.get_serializer_class()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 211, in get_serializer_class
+    if self.action == 'list':
+       ^^^^^^^^^^^
+AttributeError: 'PartnerProfileListCreateAPIView' object has no attribute 'action'
+ERROR 2025-04-28 17:35:43,374 log 44201 6138687488 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 243, in get
+    return self.list(request, *args, **kwargs)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 42, in list
+    serializer = self.get_serializer(page, many=True)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 112, in get_serializer
+    serializer_class = self.get_serializer_class()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 211, in get_serializer_class
+    if self.action == 'list':
+       ^^^^^^^^^^^
+AttributeError: 'PartnerProfileListCreateAPIView' object has no attribute 'action'
+WARNING 2025-04-28 17:57:03,682 log 44621 6156726272 Not Found: /api/partner/partner-profiles/1/
+WARNING 2025-04-28 17:57:35,831 log 44642 6162673664 Not Found: /api/partner/partner-profiles/1/
+WARNING 2025-04-28 17:57:47,440 log 44652 6201487360 Not Found: /api/partner/partner-profiles/1/
+WARNING 2025-04-28 17:57:59,601 log 44652 6201487360 Not Found: /api/partner/partner-profiles/1/
+ERROR 2025-04-28 17:58:06,310 log 44652 6201487360 Internal Server Error: /api/partner/partners/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 69, in list
+    partners_data = serializer.data
+                    ^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 797, in data
+    ret = super().data
+          ^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 251, in data
+    self._data = self.to_representation(self.instance)
+                 ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 716, in to_representation
+    self.child.to_representation(item) for item in iterable
+                                                   ^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 384, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1935, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 131, in __iter__
+    setattr(obj, attr_name, row[col_pos])
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: property 'total_referrals' of 'PartnerProfile' object has no setter
+WARNING 2025-04-28 17:59:49,417 log 44683 6225997824 Not Found: /api/partner/partner-profiles/
+WARNING 2025-04-28 17:59:49,420 log 44683 6242824192 Not Found: /api/partner/partner-profiles/dashboard/
+WARNING 2025-04-28 17:59:49,424 log 44683 6259650560 Not Found: /api/partner/partner-profiles/
+WARNING 2025-04-28 17:59:49,427 log 44683 6276476928 Not Found: /api/partner/partner-profiles/dashboard/
+WARNING 2025-04-28 18:00:24,897 log 44683 6192345088 Not Found: /api/partner/partner-profiles/
+WARNING 2025-04-28 18:00:24,901 log 44683 6209171456 Not Found: /api/partner/partner-profiles/dashboard/
+WARNING 2025-04-28 18:00:30,043 log 44683 6225997824 Not Found: /api/partner/partner-profiles/
+WARNING 2025-04-28 18:00:30,045 log 44683 6242824192 Not Found: /api/partner/partner-profiles/dashboard/
+WARNING 2025-04-28 18:03:14,941 log 44776 6188675072 Not Found: /api/partner/partner-profiles/dashboard/
+ERROR 2025-04-28 18:07:29,970 log 44811 6192705536 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 96, in retrieve
+    recent_referrals = partner.user.referrals.all().order_by('-created_at')[:10]
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1708, in order_by
+    obj.query.add_ordering(*field_names)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 2288, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'created_at' into field. Choices are: actual_commission, budget_range, client_email, client_name, client_phone, company, date_submitted, earning, expected_implementation_date, id, notes, partner, partner_id, payout_referrals, potential_commission, prev_status, product, product_id, product_name, referral_code, status, status_changes, timeline, updated_at, updated_by, updated_by_id, user, user_id
+ERROR 2025-04-28 18:08:28,589 log 44811 6209531904 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 96, in retrieve
+    recent_referrals = partner.user.referrals.all().order_by('-created_at')[:10]
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1708, in order_by
+    obj.query.add_ordering(*field_names)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 2288, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'created_at' into field. Choices are: actual_commission, budget_range, client_email, client_name, client_phone, company, date_submitted, earning, expected_implementation_date, id, notes, partner, partner_id, payout_referrals, potential_commission, prev_status, product, product_id, product_name, referral_code, status, status_changes, timeline, updated_at, updated_by, updated_by_id, user, user_id
+ERROR 2025-04-28 18:13:46,287 log 44896 6134001664 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 164, in retrieve
+    'total_commission': recent_referrals.filter(status='converted').aggregate(
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1493, in _filter_or_exclude
+    raise TypeError("Cannot filter a query once a slice has been taken.")
+TypeError: Cannot filter a query once a slice has been taken.
+ERROR 2025-04-28 18:15:38,220 log 44921 6129397760 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 167, in retrieve
+    'total_commission': recent_referrals.filter(status='converted').aggregate(
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1493, in _filter_or_exclude
+    raise TypeError("Cannot filter a query once a slice has been taken.")
+TypeError: Cannot filter a query once a slice has been taken.
+ERROR 2025-04-28 18:20:02,310 log 44964 6168014848 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 172, in retrieve
+    'total_commission': recent_referrals.filter(status='converted').aggregate(
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1493, in _filter_or_exclude
+    raise TypeError("Cannot filter a query once a slice has been taken.")
+TypeError: Cannot filter a query once a slice has been taken.
+ERROR 2025-04-28 18:21:13,071 log 44987 6133428224 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 173, in retrieve
+    'total_commission': recent_referrals.filter(status='converted').aggregate(
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1493, in _filter_or_exclude
+    raise TypeError("Cannot filter a query once a slice has been taken.")
+TypeError: Cannot filter a query once a slice has been taken.
+ERROR 2025-04-28 18:22:15,109 log 45023 6137032704 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 174, in retrieve
+    'total_commission': recent_referrals.filter(status='converted').aggregate(
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1493, in _filter_or_exclude
+    raise TypeError("Cannot filter a query once a slice has been taken.")
+TypeError: Cannot filter a query once a slice has been taken.
+ERROR 2025-04-28 18:25:59,217 log 45180 6202028032 Internal Server Error: /api/partner/partner-profiles/1/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 2234, in add_fields
+    join_info = self.setup_joins(
+        name.split(LOOKUP_SEP), opts, alias, allow_many=allow_m2m
+    )
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1897, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ~~~~~~~~~~~~~~~~~~^
+        names[:pivot],
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        fail_on_missing=True,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'created_at' into field. Choices are: actual_commission, budget_range, client_email, client_name, client_phone, company, date_submitted, earning, expected_implementation_date, id, notes, partner, partner_id, payout_referrals, potential_commission, prev_status, product, product_id, product_name, referral_code, status, status_changes, timeline, updated_at, updated_by, updated_by_id, user, user_id
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 193, in retrieve
+    'recent': recent_referrals.values(
+              ~~~~~~~~~~~~~~~~~~~~~~~^
+        'id', 'client_name', 'created_at', 'expected_implementation_date',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'status', 'potential_commission', 'actual_commission', 'product__name'
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1365, in values
+    clone = self._values(*fields, **expressions)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1360, in _values
+    clone.query.set_values(fields)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 2557, in set_values
+    self.add_fields(field_names, True)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 2262, in add_fields
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'created_at' into field. Choices are: actual_commission, budget_range, client_email, client_name, client_phone, company, date_submitted, earning, expected_implementation_date, id, notes, partner, partner_id, payout_referrals, potential_commission, prev_status, product, product_id, product_name, referral_code, status, status_changes, timeline, updated_at, updated_by, updated_by_id, user, user_id
+WARNING 2025-04-28 18:30:45,172 log 45227 6185086976 Not Found: /api/partner/onboarding-links/
+WARNING 2025-04-28 18:39:21,733 log 45412 6170914816 Not Found: /api/partner/products/
