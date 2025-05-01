@@ -3,15 +3,24 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum, Case, When, F, IntegerField
 from django.utils import timezone
 from datetime import timedelta
-from rest_framework import viewsets, status, permissions  # Ensure permissions is imported
+from rest_framework import viewsets, status, permissions 
 import secrets
+
+from payouts.models import Payout
+from referrals_management.models import Referral
 from .models import PartnerOnboardingLink, PartnerProfile, Product
 from .serializers import PartnerOnboardingLinkSerializer, PartnerProfileSerializer, PartnerDetailSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class PartnerViewSet(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
     queryset = PartnerProfile.objects.all()
     serializer_class = PartnerProfileSerializer
     
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
     def get_queryset(self):
         """
         Customize the queryset to include calculated fields needed for the frontend
@@ -33,32 +42,33 @@ class PartnerViewSet(viewsets.ModelViewSet):
         # Add calculated fields for earnings (adjust as needed based on your models)
         # Assuming the earnings model has a partner field related to PartnerProfile
         if hasattr(self, 'earnings'):
-            queryset = queryset.annotate(
-                total_earnings=Sum(
-                    Case(
-                        When(earnings__status__in=['available', 'paid'], then=F('earnings__amount')),
-                        default=0,
-                        output_field=IntegerField()
-                    )
-                ),
-                available_earnings=Sum(
-                    Case(
-                        When(earnings__status='available', then=F('earnings__amount')),
-                        default=0,
-                        output_field=IntegerField()
-                    )
-                ),
-                pending_earnings=Sum(
-                    Case(
-                        When(earnings__status='pending', then=F('earnings__amount')),
-                        default=0,
-                        output_field=IntegerField()
+                queryset = queryset.annotate(
+                    total_earnings=Sum(
+                        Case(
+                            When(earnings__status__in=['available', 'paid'], then=F('earnings__amount')),
+                            default=0,
+                            output_field=IntegerField()
+                        )
+                    ),
+                    available_earnings=Sum(
+                        Case(
+                            When(earnings__status='available', then=F('earnings__amount')),
+                            default=0,
+                            output_field=IntegerField()
+                        )
+                    ),
+                    pending_earnings=Sum(
+                        Case(
+                            When(earnings__status='pending', then=F('earnings__amount')),
+                            default=0,
+                            output_field=IntegerField()
+                        )
                     )
                 )
-            )
-        
+            
         return queryset
-    
+
+        # Add calculated fields for total earnings, available earnings, and pending earnings        
     def list(self, request):
         """
         Override list method to return partner profiles in the format needed by the frontend
@@ -78,6 +88,7 @@ class PartnerViewSet(viewsets.ModelViewSet):
                 partner['conversion_rate'] = 0
         
         return Response(partners_data)
+    
     
     def retrieve(self, request, pk=None):
         """
@@ -328,7 +339,175 @@ class PartnerViewSet(viewsets.ModelViewSet):
         partner.save()
         
         return Response(self.get_serializer(partner).data)
+    # BACKEND FIX - Django View
+    @action(detail=False, methods=['get'], url_path='recent-activities')
+    def recent_activities(self, request):
+            """
+            Custom endpoint for recent activities with proper date handling and name formatting
+            """
+            # Get recent partners (last 5)
+            recent_partners = PartnerProfile.objects.select_related('user').order_by('-created_at')[:5].values(
+                'id', 'user__id', 'user__first_name', 'user__last_name', 'created_at'
+            )
+            
+            # Get recent referrals (last 5)
+            recent_referrals = Referral.objects.select_related('partner__user', 'product').order_by('-date_submitted')[:5].values(
+                'id', 'client_name', 'status', 'date_submitted', 'actual_commission', 'product__name',
+                'partner__id', 'partner__user__id', 'partner__user__first_name', 'partner__user__last_name'
+            )
+            
+            # Get recent payouts (last 5)
+            recent_payouts = Payout.objects.select_related('partner__user').order_by('-processed_date')[:5].values(
+                'id', 'amount', 'processed_date', 'status',
+                'partner__id', 'partner__user__id', 'partner__user__first_name', 'partner__user__last_name'
+            )
+            
+            activities = []
+            
+            # Process partners
+            for partner in recent_partners:
+                # Ensure first and last name exist
+                first_name = partner.get('user__first_name') or ''
+                last_name = partner.get('user__last_name') or ''
+                full_name = f"{first_name} {last_name}".strip()
+                if not full_name:
+                    full_name = "Unknown"
+                
+                timestamp = partner.get('created_at')
+                activities.append({
+                    'id': partner['id'],
+                    'type': 'new_partner',
+                    'name': f"New partner: {full_name}",
+                    'timestamp': timestamp.isoformat() if timestamp else None,
+                    'amount': None,
+                    'user_id': partner.get('user__id'),
+                    'associated_name': full_name,
+                    'associated_type': 'partner'
+                })
+            
+            # Process referrals
+            for referral in recent_referrals:
+                # Ensure client name exists and is not empty
+                client_name = referral.get('client_name')
+                if not client_name or client_name.strip() == '':
+                    client_name = "Unknown Client"
+                
+                # Get product name if available
+                product_name = referral.get('product__name')
+                
+                # Get partner information
+                first_name = referral.get('partner__user__first_name') or ''
+                last_name = referral.get('partner__user__last_name') or ''
+                partner_name = f"{first_name} {last_name}".strip()
+                if not partner_name:
+                    partner_name = "Unknown Partner"
+                
+                # Format the activity name with more details
+                activity_name = f"Referral {referral['status']}: {client_name}"
+                if product_name:
+                    activity_name += f" for {product_name}"
+                
+                timestamp = referral.get('date_submitted')
+                activities.append({
+                    'id': referral['id'] + 1000,  # Offset to avoid ID conflicts
+                    'type': 'referral_status',
+                    'name': activity_name,
+                    'timestamp': timestamp.isoformat() if timestamp else None,
+                    'amount': float(referral['actual_commission']) if referral['actual_commission'] else None,
+                    'user_id': referral.get('partner__user__id'),
+                    'partner_id': referral.get('partner__id'),
+                    'associated_name': partner_name,
+                    'client_name': client_name,
+                    'status': referral.get('status'),
+                    'associated_type': 'partner'
+                })
+            
+            # Process payouts
+            for payout in recent_payouts:
+                # Ensure partner name exists
+                first_name = payout.get('partner__user__first_name') or ''
+                last_name = payout.get('partner__user__last_name') or ''
+                partner_name = f"{first_name} {last_name}".strip()
+                if not partner_name:
+                    partner_name = "Unknown Partner"
+                
+                status = payout.get('status', 'processed')
+                
+                timestamp = payout.get('processed_date')
+                activities.append({
+                    'id': payout['id'] + 2000,  # Offset to avoid ID conflicts
+                    'type': 'payout_processed',
+                    'name': f"Payout {status} for {partner_name}",
+                    'timestamp': timestamp.isoformat() if timestamp else None,
+                    'amount': float(payout['amount']) if payout['amount'] else None,
+                    'user_id': payout.get('partner__user__id'),
+                    'partner_id': payout.get('partner__id'),
+                    'associated_name': partner_name,
+                    'status': status,
+                    'associated_type': 'partner'
+                })
+            
+            # Only include activities with valid timestamps and sort by timestamp (newest first)
+            activities_with_timestamps = [a for a in activities if a['timestamp'] is not None]
+            
+            # If we have no activities with timestamps, include all and add a default timestamp
+            if not activities_with_timestamps and activities:
+                from datetime import datetime
+                current_time = datetime.now().isoformat()
+                for activity in activities:
+                    activity['timestamp'] = current_time
+                activities_with_timestamps = activities
+            
+            activities_sorted = sorted(
+                activities_with_timestamps,
+                key=lambda x: x['timestamp'],
+                reverse=True
+            )[:10]
+            
+            return Response(activities_sorted)
     
+    # Add this to your PartnerViewSet
+    @action(detail=False, methods=['get'], url_path='stats/referrals')
+    def referral_stats(self, request):
+        """
+        Endpoint to get referral statistics for charts
+        """
+        from django.db.models.functions import TruncMonth
+        from django.db.models import Count
+        
+        # Get referrals for the last 6 months grouped by month
+        six_months_ago = timezone.now() - timedelta(days=180)
+        
+        monthly_stats = (
+            Referral.objects
+            .filter(date_submitted__gte=six_months_ago)
+            .annotate(month=TruncMonth('date_submitted'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        
+        # Format the data with month names
+        formatted_stats = []
+        month_names = {
+            1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr',
+            5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug',
+            9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+        }
+        
+        for stat in monthly_stats:
+            month = stat['month'].month
+            year = stat['month'].year
+            formatted_stats.append({
+                'month': f"{month_names[month]} {str(year)[-2:]}",
+                'count': stat['count']
+            })
+        
+        return Response({
+            'monthly_stats': formatted_stats,
+            'total_referrals': Referral.objects.count()
+        })
+        
 class PartnerOnboardingLinkViewSet(viewsets.ModelViewSet):
     queryset = PartnerOnboardingLink.objects.all()
     serializer_class = PartnerOnboardingLinkSerializer

@@ -1,7 +1,9 @@
 # payouts/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PayoutViewSet, PayoutSettingViewSet, EarningsViewSet
+
+from payouts.views import EarningsViewSet, PayoutSettingViewSet, PayoutViewSet
+
 
 router = DefaultRouter()
 router.register(r'payouts', PayoutViewSet, basename='payout')

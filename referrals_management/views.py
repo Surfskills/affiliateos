@@ -112,25 +112,24 @@ class ReferralViewSet(viewsets.ModelViewSet):
             elif date_filter == 'last3Months':
                 three_months_ago = today - timedelta(days=90)
                 queryset = queryset.filter(date_submitted__date__gte=three_months_ago)
-        
-        return queryset.order_by('-date_submitted')
-            
-        # Filter by partner profile ID
+
+        # ✅ Move partner filter above the return
         partner_id = self.request.query_params.get('partner_id')
         if partner_id:
             queryset = queryset.filter(user__partner_profile__id=partner_id)
-            
-        # Filter by commission range
+
+        # Optional: commission filters can stay here too
         min_commission = self.request.query_params.get('min_commission')
         max_commission = self.request.query_params.get('max_commission')
-        
+
         if min_commission:
             queryset = queryset.filter(potential_commission__gte=float(min_commission))
         if max_commission:
             queryset = queryset.filter(potential_commission__lte=float(max_commission))
-            
-        return queryset
-    
+
+        return queryset.order_by('-date_submitted')
+        
+
     @action(detail=True, methods=['post'])
     def update_status(self, request, pk=None):
         referral = self.get_object()

@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import ReferralViewSet
 
 router = DefaultRouter()
-router.register(r'', ReferralViewSet)
+router.register(r'partner/referrals', ReferralViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
