@@ -5,6 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Sum, Q, F, Case, When, IntegerField, DecimalField
 from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
+from django.utils import timezone
 
 from partner.models import PartnerProfile
 from .models import Payout, PayoutSetting, Earnings
@@ -180,18 +181,22 @@ class PayoutViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
+        """Mark a payout as completed and update all associated earnings"""
         payout = self.get_object()
         transaction_id = request.data.get('transaction_id')
         
         if not payout.can_complete:
             return Response({'error': 'Payout cannot be completed'}, status=status.HTTP_400_BAD_REQUEST)
         
-        payout = PaymentProcessor.complete_payment(payout, transaction_id)
-        payout.processed_by = request.user
-        payout.save()
-        
-        serializer = PayoutSerializer(payout)
-        return Response(serializer.data)
+        try:
+            payout = PaymentProcessor.complete_payment(payout, transaction_id, request.user)
+            serializer = PayoutSerializer(payout)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to complete payout: {str(e)}'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     @action(detail=True, methods=['post'])
     def fail(self, request, pk=None):
@@ -261,21 +266,59 @@ class PayoutViewSet(viewsets.ModelViewSet):
         ).order_by('period')
         
         return Response(list(stats))
-@action(detail=False, methods=['get'], url_path='monthly-earnings')
-def monthly_earnings(self, request):
-    payouts = Payout.objects.all()  # Or apply any necessary filters
+    # @action(detail=False, methods=['get'], url_path='monthly-earnings')
+    # def monthly_earnings(self, request):
+    #     payouts = Payout.objects.all()  # Or apply any necessary filters
 
-    if not payouts.exists():
-        return Response([], status=status.HTTP_200_OK)  # Return empty array if no payouts
+    #     if not payouts.exists():
+    #         return Response([], status=status.HTTP_200_OK)  # Return empty array if no payouts
 
-    # Process and return the earnings data as you already have in your backend logic
-    # For example:
-    earnings = payouts.aggregate(
-        total_count=Count('id'),
-        total_amount=Sum('amount')
-    )
-    return Response(earnings)
-    
+    #     # Process and return the earnings data as you already have in your backend logic
+    #     # For example:
+    #     earnings = payouts.aggregate(
+    #         total_count=Count('id'),
+    #         total_amount=Sum('amount')
+    #     )
+    #     return Response(earnings)
+    @action(detail=True, methods=['post'])
+    def force_update_earnings(self, request, pk=None):
+        """
+        Debug action to force update all available earnings for this payout's partner
+        This can help identify if there are any issues with the update logic
+        """
+        if not request.user.is_staff:
+            return Response({'error': 'Staff only action'}, status=status.HTTP_403_FORBIDDEN)
+        
+        payout = self.get_object()
+        from payouts.models import Earnings
+        
+        try:
+            # Get all available earnings for this partner
+            available_earnings = Earnings.objects.filter(
+                partner=payout.partner,
+                status=Earnings.Status.AVAILABLE
+            )
+            
+            # Update them to paid status
+            update_count = 0
+            for earning in available_earnings:
+                old_status = earning.status
+                earning.status = Earnings.Status.PAID
+                earning.payout = payout
+                earning.paid_date = timezone.now()
+                earning.save()
+                update_count += 1
+                logger.info(f"Force updated earning {earning.id} from {old_status} to {earning.status}")
+            
+            return Response({
+                'success': True,
+                'message': f'Force updated {update_count} earnings to paid status',
+                'earnings_count': update_count
+            })
+        except Exception as e:
+            logger.error(f"Error in force_update_earnings: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 class PayoutSettingViewSet(viewsets.ModelViewSet):
     queryset = PayoutSetting.objects.all()
     serializer_class = PayoutSettingSerializer
@@ -390,117 +433,144 @@ class EarningsViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(Q(payout__isnull=True) | ~Q(status='paid'))
 
         return queryset
-
-    @atomic
-    def create(self, validated_data):
-        partner = validated_data['partner']
-        amount = validated_data['amount']
+    def perform_create(self, serializer):
+        """Create earnings record with proper initial status based on source"""
+        referral = serializer.validated_data.get('referral')
+        partner = serializer.validated_data.get('partner')
+        amount = serializer.validated_data.get('amount')
+        source = serializer.validated_data.get('source', Earnings.Source.REFERRAL)
         
-        # Get available earnings to include in this payout
-        available_earnings = Earnings.objects.filter(
+        # Determine initial status based on source type
+        initial_status = self._get_initial_status(source, referral)
+        
+        # Set additional data for the specific source types
+        additional_data = {}
+        
+        if source == Earnings.Source.REFERRAL:
+            # For referrals, always set notes about the referral
+            client_name = referral.client_name if referral else 'Unknown client'
+            additional_data['notes'] = f"Earnings from referral: {client_name}"
+        
+        # Save with determined status and any additional data
+        serializer.save(
+            status=initial_status,
+            source=source,
             partner=partner,
-            status=Earnings.Status.AVAILABLE
-        ).order_by('date')
-        
-        # Mark earnings as processing
-        total_included = 0
-        for earning in available_earnings:
-            if total_included + earning.amount <= amount:
-                earning.mark_as_processing()
-                total_included += earning.amount
-            else:
-                break
-                
-        if total_included < amount:
-            raise serializers.ValidationError(
-                "Not enough available earnings to cover the requested amount"
-            )
-        
-        # Create the payout
-        payout = super().create(validated_data)
-        payout.amount = total_included  # Use actual included amount
-        payout.save()
-        
-        return payout
+            amount=amount,
+            **additional_data
+        )
 
+    def _get_initial_status(self, source, referral=None):
+        """
+        Determine the initial status for an earnings record
+        based on its source and whether it has a referral
+        """
+        # Referral earnings always need approval
+        if source == Earnings.Source.REFERRAL:
+            return Earnings.Status.PENDING_APPROVAL
+        
+        # Your business logic for other source types
+        # You can customize this based on your requirements
+        if source in [Earnings.Source.PROMOTION]:
+            # Promotions may also need approval
+            return Earnings.Status.PENDING_APPROVAL
+        elif source == Earnings.Source.BONUS:
+            # Bonuses might be immediately available or need approval
+            # Depending on your business rules
+            return Earnings.Status.PENDING_APPROVAL  # or AVAILABLE
+        
+        # Default for other source types
+        return Earnings.Status.AVAILABLE
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
         """Admin approves pending earnings to make them available"""
+        if not request.user.is_staff:
+            return Response(
+                {'error': 'Only admin users can approve earnings'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
         earning = self.get_object()
-        if earning.status != Earnings.Status.PENDING:
-            return Response({'error': 'Only pending earnings can be approved'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
+        if earning.status != Earnings.Status.PENDING_APPROVAL:
+            return Response(
+                {'error': 'Only pending approval earnings can be approved'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         earning.status = Earnings.Status.AVAILABLE
+        earning.approved_by = request.user
+        earning.approval_date = timezone.now()
         earning.save()
+        
         serializer = self.get_serializer(earning)
         return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
         """Admin rejects pending earnings"""
+        if not request.user.is_staff:
+            return Response(
+                {'error': 'Only admin users can reject earnings'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
         earning = self.get_object()
         reason = request.data.get('reason', 'Rejected by admin')
         
-        if earning.status != Earnings.Status.PENDING:
-            return Response({'error': 'Only pending earnings can be rejected'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
+        if earning.status != Earnings.Status.PENDING_APPROVAL:
+            return Response(
+                {'error': 'Only pending approval earnings can be rejected'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        earning.status = Earnings.Status.CANCELLED
+        earning.status = Earnings.Status.REJECTED
         earning.notes = f"{earning.notes or ''}\nRejection reason: {reason}"
+        earning.rejected_by = request.user
+        earning.rejection_date = timezone.now()
         earning.save()
+        
         serializer = self.get_serializer(earning)
         return Response(serializer.data)
 
     @atomic
     @action(detail=True, methods=['post'])
-    def mark_available(self, request, pk=None):
-        """Mark an earning as available for payout"""
-        earning = self.get_object()
-        
-        if earning.status != Earnings.Status.PENDING:
-            return Response({'error': 'Only pending earnings can be marked as available'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        success = earning.mark_as_available()
-        if success:
-            serializer = self.get_serializer(earning)
-            return Response(serializer.data)
-        else:
-            return Response({'error': 'Failed to update status'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    @atomic
-    @action(detail=True, methods=['post'])
     def mark_paid(self, request, pk=None):
-        """Mark an earning as paid"""
+        """Mark an earning as paid when payout is completed"""
         earning = self.get_object()
         
-        if earning.status != Earnings.Status.PROCESSING:
-            return Response({'error': 'Only processing earnings can be marked as paid'}, status=status.HTTP_400_BAD_REQUEST)
+        # Only allow marking as paid if earnings are either AVAILABLE or PAID
+        # (prevent marking PENDING_APPROVAL earnings as paid)
+        if earning.status not in [Earnings.Status.AVAILABLE, Earnings.Status.PAID]:
+            return Response(
+                {'error': 'Only available or already paid earnings can be marked as paid'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        success = earning.mark_as_paid()
-        if success:
-            serializer = self.get_serializer(earning)
-            return Response(serializer.data)
-        else:
-            return Response({'error': 'Failed to update status'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    @atomic
-    @action(detail=True, methods=['post'])
-    def cancel(self, request, pk=None):
-        """Cancel an earning"""
-        earning = self.get_object()
-        reason = request.data.get('reason')
+        payout_id = request.data.get('payout_id')
+        if not payout_id:
+            return Response(
+                {'error': 'Payout ID is required to mark earnings as paid'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        if earning.status == Earnings.Status.PAID:
-            return Response({'error': 'Paid earnings cannot be cancelled'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            payout = Payout.objects.get(id=payout_id)
+        except Payout.DoesNotExist:
+            return Response(
+                {'error': 'Payout not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         
-        success = earning.cancel(reason)
-        if success:
-            serializer = self.get_serializer(earning)
-            return Response(serializer.data)
-        else:
-            return Response({'error': 'Failed to cancel earning'}, status=status.HTTP_400_BAD_REQUEST)
+        # Only update if not already paid
+        if earning.status != Earnings.Status.PAID:
+            earning.status = Earnings.Status.PAID
+            earning.payout = payout
+            earning.paid_date = timezone.now()
+            earning.save()
+        
+        serializer = self.get_serializer(earning)
+        return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
     def summary(self, request):
@@ -512,22 +582,19 @@ class EarningsViewSet(viewsets.ModelViewSet):
             'available_earnings': queryset.filter(
                 status=Earnings.Status.AVAILABLE
             ).aggregate(total=Sum('amount'))['total'] or 0,
-            'pending_earnings': queryset.filter(
-                status=Earnings.Status.PENDING
-            ).aggregate(total=Sum('amount'))['total'] or 0,
-            'processing_earnings': queryset.filter(
-                status=Earnings.Status.PROCESSING
+            'pending_approval_earnings': queryset.filter(
+                status=Earnings.Status.PENDING_APPROVAL
             ).aggregate(total=Sum('amount'))['total'] or 0,
             'paid_earnings': queryset.filter(
                 status=Earnings.Status.PAID
             ).aggregate(total=Sum('amount'))['total'] or 0,
-            'cancelled_earnings': queryset.filter(
-                status=Earnings.Status.CANCELLED
+            'rejected_earnings': queryset.filter(
+                status=Earnings.Status.REJECTED
             ).aggregate(total=Sum('amount'))['total'] or 0,
         }
         
         return Response(summary_data)
-    
+
     @action(detail=False, methods=['get'])
     def stats(self, request):
         """Get monthly/weekly stats for earnings"""

@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from django.db.transaction import atomic
 from django.utils import timezone
-
+from django.db.models import Q
 from partner.models import PartnerProfile
 from referrals_management.models import Referral
 from referrals_management.serializers import ReferralListSerializer
@@ -17,7 +17,7 @@ class BasePayoutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payout
-        fields = ['id', 'status', 'status_display', 'payment_method', 'payment_method_display', 
+        fields = ['id', 'status', 'status_display', 'payment_method',  'payment_method_display', 
                  'amount', 'request_date', 'processed_date', 'processed_by', 'processed_by_name',
                  'note', 'client_notes', 'transaction_id', 'updated_at']
         read_only_fields = ['id', 'request_date', 'processed_date', 'updated_at']
@@ -144,21 +144,67 @@ class PayoutUpdateSerializer(BasePayoutSerializer):
     def update(self, instance, validated_data):
         request = self.context.get('request')
         
+        # Track if status is being changed to COMPLETED
+        completing_payout = (
+            'status' in validated_data and 
+            validated_data['status'] == Payout.Status.COMPLETED and
+            instance.status != Payout.Status.COMPLETED
+        )
+        
         if 'status' in validated_data and validated_data['status'] != instance.status:
             validated_data['processed_by'] = request.user if request else None
             
             if validated_data['status'] == Payout.Status.COMPLETED:
                 validated_data['processed_date'] = timezone.now()
-                self._mark_earnings_as_paid(instance)
                 
-        return super().update(instance, validated_data)
+        # Update the instance
+        try:
+            with transaction.atomic():
+                instance = super().update(instance, validated_data)
+                
+                # After updating, if status changed to COMPLETED, update earnings
+                if completing_payout:
+                    instance._update_associated_earnings()
+        except Exception as e:
+            # Log the error
+            logger.error(f"Error updating payout {instance.id}: {str(e)}")
+            raise
+            
+        return instance
 
-    def _mark_earnings_as_paid(self, payout):
-        """Mark all processing earnings in this payout as paid"""
+    def _mark_all_earnings_as_paid(self, payout):
+        """Mark all earnings associated with this payout as paid"""
+        # Update earnings from payout referrals
         for payout_ref in payout.referrals.select_related('referral__earning').all():
-            if hasattr(payout_ref.referral, 'earning') and payout_ref.referral.earning.status == 'processing':
-                payout_ref.referral.earning.mark_as_paid()
+            if hasattr(payout_ref.referral, 'earning'):
+                earning = payout_ref.referral.earning
+                if earning.status in [Earnings.Status.PROCESSING, Earnings.Status.AVAILABLE]:
+                    earning.status = Earnings.Status.PAID
+                    earning.payout = payout
+                    earning.paid_date = timezone.now()
+                    earning.save()
+        
+        # Directly update any earnings linked to the payout
+        for earning in payout.earnings_included.all():
+            if earning.status in [Earnings.Status.PROCESSING, Earnings.Status.AVAILABLE]:
+                earning.status = Earnings.Status.PAID
+                earning.paid_date = timezone.now()
+                earning.save()
 
+    def _ensure_all_earnings_paid(self, payout):
+        """Safety check to ensure all related earnings are marked as paid"""
+        from .models import Earnings
+        
+        # Find any earnings that should be paid but aren't
+        unpaid_earnings = Earnings.objects.filter(
+            Q(payout=payout) | Q(referral__payout_referrals__payout=payout),
+            status__in=[Earnings.Status.AVAILABLE, Earnings.Status.PROCESSING]
+        ).distinct()
+        
+        for earning in unpaid_earnings:
+            earning.status = Earnings.Status.PAID
+            earning.paid_date = timezone.now()
+            earning.save()
 
 class PayoutReferralSerializer(serializers.ModelSerializer):
     """Serializer for payout referrals"""
@@ -207,12 +253,24 @@ class BaseEarningsSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     source_display = serializers.CharField(source='get_source_display', read_only=True)
     payout_id = serializers.CharField(source='payout.id', read_only=True)
+    status = serializers.CharField(read_only=True)
+    raw_status = serializers.CharField(source='status', read_only=True)
+    approved_by = serializers.CharField(source='approved_by.username', read_only=True)
+    rejected_by = serializers.CharField(source='rejected_by.username', read_only=True)
 
     class Meta:
         model = Earnings
-        fields = ['id', 'amount', 'date', 'source', 'source_display', 'status', 'status_display',
-                 'notes', 'created_at', 'updated_at', 'payout_id']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = [
+            'id', 'amount', 'date', 'source','paid_date', 'source_display',
+            'status', 'raw_status', 'status_display', 'notes',
+            'created_at', 'updated_at', 'payout_id',
+            'approved_by', 'approval_date', 'rejected_by', 'rejection_date'
+        ]
+        read_only_fields = [
+            'created_at', 'updated_at',
+            'approved_by', 'approval_date',
+            'rejected_by', 'rejection_date'
+        ]
 
 
 class EarningsSerializer(BaseEarningsSerializer):
@@ -236,16 +294,47 @@ class EarningsSerializer(BaseEarningsSerializer):
 
 class EarningsCreateSerializer(BaseEarningsSerializer):
     """Serializer for earnings creation"""
+
     class Meta(BaseEarningsSerializer.Meta):
         fields = BaseEarningsSerializer.Meta.fields + ['partner', 'referral']
+        read_only_fields = BaseEarningsSerializer.Meta.read_only_fields
 
     def validate(self, data):
-        if data.get('source') != Earnings.Source.REFERRAL and not data.get('date'):
+        """Enhanced validation to ensure proper status assignment based on source"""
+        # Set default date if not provided
+        if not data.get('date'):
             data['date'] = timezone.now().date()
+        
+        # Make sure source is set, defaulting to REFERRAL if not specified
+        source = data.get('source', Earnings.Source.REFERRAL)
+        data['source'] = source
+        
+        # We'll let the ViewSet's perform_create handle the status assignment
+        # but we can add some validation here to ensure data consistency
+        
+        # If referral is provided, source must be REFERRAL
+        referral = data.get('referral')
+        if referral and source != Earnings.Source.REFERRAL:
+            raise serializers.ValidationError(
+                "When a referral is provided, source must be 'referral'"
+            )
+        
         return data
 
 
-class EarningsUpdateSerializer(BaseEarningsSerializer):
+class EarningsUpdateSerializer(serializers.ModelSerializer):
     """Serializer for earnings updates"""
-    class Meta(BaseEarningsSerializer.Meta):
-        fields = ['status', 'notes']
+    
+    class Meta:
+        model = Earnings
+        fields = ['notes']  # Removed 'status' to prevent direct status changes
+        
+    def validate(self, data):
+        """Prevent unauthorized status changes"""
+        # Status changes should only happen through dedicated endpoints like 
+        # approve(), reject(), mark_paid(), etc.
+        if 'status' in self.initial_data:
+            raise serializers.ValidationError(
+                "Status cannot be directly changed. Use the appropriate endpoint instead."
+            )
+        return data
