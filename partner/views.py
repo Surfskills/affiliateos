@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import timedelta
 from rest_framework import viewsets, status, permissions 
 import secrets
+from django.db.models.functions import TruncMonth
 
 from payouts.models import Payout
 from referrals_management.models import Referral
@@ -20,6 +21,18 @@ class PartnerViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=False, methods=['get'], url_path='my_profile', permission_classes=[IsAuthenticated])
+    def my_profile(self, request):
+        """
+        Returns the partner profile for the currently authenticated user.
+        """
+        try:
+            profile = PartnerProfile.objects.get(user=request.user)
+        except PartnerProfile.DoesNotExist:
+            return Response({"error": "Partner not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)
 
     def get_queryset(self):
         """
@@ -507,7 +520,84 @@ class PartnerViewSet(viewsets.ModelViewSet):
             'monthly_stats': formatted_stats,
             'total_referrals': Referral.objects.count()
         })
+    @action(detail=False, methods=['get'], url_path='monthly-stats')
+    def monthly_stats(self, request):
+        """
+        Endpoint to get monthly statistics for charts with explicit default values
+        """
+        try:
+            profile = PartnerProfile.objects.get(user=request.user)
+        except PartnerProfile.DoesNotExist:
+            return Response({"error": "Partner not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get data for the last 6 months
+        six_months_ago = timezone.now() - timedelta(days=180)
         
+        # Get referrals by month
+        monthly_referrals = {}
+        referrals_data = (
+            Referral.objects
+            .filter(partner=profile, date_submitted__gte=six_months_ago)
+            .annotate(month=TruncMonth('date_submitted'))
+            .values('month')
+            .annotate(count=Count('id'))
+        )
+        
+        # Convert to a more easily accessible format
+        for item in referrals_data:
+            month_key = f"{item['month'].year}-{item['month'].month}"
+            monthly_referrals[month_key] = item['count']
+        
+        # Get earnings by month
+        monthly_earnings = {}
+        if hasattr(profile, 'earnings'):
+            earnings_data = (
+                profile.earnings
+                .filter(created_at__gte=six_months_ago)
+                .annotate(month=TruncMonth('created_at'))
+                .values('month')
+                .annotate(amount=Sum('amount'))
+            )
+            
+            for item in earnings_data:
+                month_key = f"{item['month'].year}-{item['month'].month}"
+                monthly_earnings[month_key] = float(item['amount'])
+        
+        # Format the data with month names
+        month_names = {
+            1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr',
+            5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug',
+            9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+        }
+        
+        # Generate the last 6 months in reverse chronological order
+        response_data = []
+        now = timezone.now()
+        for i in range(5, -1, -1):
+            # Calculate month by going back i months from current month
+            target_month = now.month - i
+            target_year = now.year
+            
+            # Handle month wrapping around
+            while target_month <= 0:
+                target_month += 12
+                target_year -= 1
+            
+            month_key = f"{target_year}-{target_month}"
+            month_display = f"{month_names[target_month]} {str(target_year)[-2:]}"
+            
+            # Get data with explicit default values
+            response_data.append({
+                'month': month_display,
+                'referrals': monthly_referrals.get(month_key, 0),  # Default to 0 if no data
+                'earnings': monthly_earnings.get(month_key, 0.0)   # Default to 0.0 if no data
+            })
+        
+        # Log the response for debugging
+        print(f"Monthly stats response: {response_data}")
+        
+        return Response(response_data)
+
 class PartnerOnboardingLinkViewSet(viewsets.ModelViewSet):
     queryset = PartnerOnboardingLink.objects.all()
     serializer_class = PartnerOnboardingLinkSerializer

@@ -16092,3 +16092,61 @@ WARNING 2025-05-01 19:31:12,089 log 82712 6176698368 Bad Request: /api/payouts/p
 WARNING 2025-05-01 19:36:15,311 log 82712 6159872000 Bad Request: /api/payouts/payouts/
 WARNING 2025-05-01 19:38:04,016 log 82712 6176698368 Bad Request: /api/payouts/payouts/
 WARNING 2025-05-01 19:43:51,171 log 82712 6227177472 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-02 05:02:38,390 log 85488 6168506368 Unauthorized: /api/referrals/partner/referrals/
+WARNING 2025-05-02 05:02:38,391 log 85488 6185332736 Unauthorized: /api/referrals/partner/referrals/stats/
+WARNING 2025-05-02 05:02:38,396 log 85488 6168506368 Unauthorized: /api/referrals/partner/referrals/stats/
+WARNING 2025-05-02 05:02:38,399 log 85488 6202159104 Unauthorized: /api/referrals/partner/referrals/
+WARNING 2025-05-02 05:18:57,759 log 85488 6202159104 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:19:23,802 log 85488 6185332736 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:19:24,835 log 85488 6202159104 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:19:44,487 log 85488 6235811840 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:19:44,493 log 85488 6168506368 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:21:17,419 log 85488 6185332736 Not Found: /api/partner/partner-profiles/my_profile
+WARNING 2025-05-02 05:24:45,611 log 85488 6202159104 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:25:24,829 log 85488 6235811840 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:25:24,838 log 85488 6252638208 Not Found: /api/partner/partner-profiles/my_profile/
+WARNING 2025-05-02 05:32:37,703 log 87976 6163181568 Not Found: /api/api/partner/partner-profiles/stats/referrals/
+WARNING 2025-05-02 05:32:54,762 log 87976 6163181568 Not Found: /api/api/partner/partner-profiles/stats/referrals/
+WARNING 2025-05-02 05:32:54,779 log 87976 6196834304 Not Found: /api/api/partner/partner-profiles/stats/referrals/
+WARNING 2025-05-02 05:33:11,514 log 87976 6180007936 Not Found: /api/partner/partner-profiles/my_profile
+WARNING 2025-05-02 05:33:22,111 log 87976 6163181568 Not Found: /api/partner/partner-profiles/k
+WARNING 2025-05-02 08:58:45,015 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:04:33,122 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:07:43,912 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:07:49,207 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:12:17,011 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:12:29,925 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:12:31,286 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:12:36,796 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:12:41,209 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:12:56,554 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:13:39,111 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:13:42,670 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:20:51,403 log 87976 6163181568 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 09:23:01,023 log 87976 6325039104 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 10:05:34,867 log 92660 6199652352 Not Found: /api/payouts/payouts/monthly-earnings/
+WARNING 2025-05-02 10:06:10,942 log 92660 6199652352 Not Found: /api/payouts/payouts/monthly-earnings/
+ERROR 2025-05-02 10:07:22,987 log 92660 6199652352 Internal Server Error: /api/partner/partner-profiles/monthly-stats/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 539, in monthly_stats
+    .annotate(month=TruncMonth('date_submitted'))
+                    ^^^^^^^^^^
+NameError: name 'TruncMonth' is not defined

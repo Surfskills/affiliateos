@@ -261,7 +261,21 @@ class PayoutViewSet(viewsets.ModelViewSet):
         ).order_by('period')
         
         return Response(list(stats))
+@action(detail=False, methods=['get'], url_path='monthly-earnings')
+def monthly_earnings(self, request):
+    payouts = Payout.objects.all()  # Or apply any necessary filters
 
+    if not payouts.exists():
+        return Response([], status=status.HTTP_200_OK)  # Return empty array if no payouts
+
+    # Process and return the earnings data as you already have in your backend logic
+    # For example:
+    earnings = payouts.aggregate(
+        total_count=Count('id'),
+        total_amount=Sum('amount')
+    )
+    return Response(earnings)
+    
 class PayoutSettingViewSet(viewsets.ModelViewSet):
     queryset = PayoutSetting.objects.all()
     serializer_class = PayoutSettingSerializer
