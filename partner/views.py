@@ -5,82 +5,344 @@ from django.utils import timezone
 from datetime import timedelta
 from rest_framework import viewsets, status, permissions 
 import secrets
+from django.db.models import Prefetch
+from django.utils.text import slugify
 from django.db.models.functions import TruncMonth
-
+from rest_framework.decorators import api_view
+import json
+from django.utils import timezone
 from payouts.models import Payout
 from referrals_management.models import Referral
-from .models import PartnerOnboardingLink, PartnerProfile, Product
-from .serializers import PartnerOnboardingLinkSerializer, PartnerProfileSerializer, PartnerDetailSerializer
+from .models import PartnerOnboardingLink, PartnerProfile, Product, Testimonial
+from .serializers import PartnerOnboardingLinkSerializer, PartnerProfileCreateSerializer, PartnerProfileSerializer, PartnerDetailSerializer, PartnerProfileUpdateSerializer, ProductSerializer, TestimonialSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of a profile to edit it.
+    """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.user == request.user
+
+
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    A viewset for viewing products.
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow anyone to read, authenticated users to write
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            # For update and delete operations, check if user is owner
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        return super().get_permissions()
+
+
+class TestimonialViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing testimonials.
+    """
+    queryset = Testimonial.objects.all()
+    serializer_class = TestimonialSerializer
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+    permission_classes = [IsAuthenticatedOrReadOnly] 
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            # For update and delete operations, check if user is owner
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        testimonial_type = request.data.get('type', 'text')
+
+        if testimonial_type == 'text' and not request.data.get('content'):
+            return Response({'error': 'Content is required for text testimonials'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if testimonial_type == 'image' and not request.FILES.get('image'):
+            return Response({'error': 'Image file is required for image testimonials'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if testimonial_type == 'video' and not request.FILES.get('video'):
+            return Response({'error': 'Video file is required for video testimonials'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return super().create(request, *args, **kwargs)
+
 
 class PartnerViewSet(viewsets.ModelViewSet):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     queryset = PartnerProfile.objects.all()
     serializer_class = PartnerProfileSerializer
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+    permission_classes = [IsAuthenticatedOrReadOnly]  
 
+
+    def perform_create(self, serializer):
+        request = self.request
+        print(f"Request data: {request.data}")
+
+        # Ensure a unique slug
+        name_for_slug = request.data.get('name') or request.user.username
+        slug = self._generate_unique_slug(name_for_slug)
+
+        try:
+            partner_profile = serializer.save(user=request.user, slug=slug)
+            self._handle_selected_products(partner_profile)
+            self._handle_testimonials(partner_profile)
+        except Exception as e:
+            import traceback
+            print(f"Error in perform_create: {str(e)}")
+            print(traceback.format_exc())
+            raise
+
+    
     @action(detail=False, methods=['get'], url_path='my_profile', permission_classes=[IsAuthenticated])
     def my_profile(self, request):
         """
         Returns the partner profile for the currently authenticated user.
         """
         try:
-            profile = PartnerProfile.objects.get(user=request.user)
+            # FIXED: Use select_related and prefetch_related for better performance
+            profile = PartnerProfile.objects.select_related('user').prefetch_related(
+                'selected_products', 
+                'testimonials'
+            ).get(user=request.user)
         except PartnerProfile.DoesNotExist:
             return Response({"error": "Partner not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return PartnerDetailSerializer
+        return super().get_serializer_class()
+    
+    from django.db.models import Count, Case, When, IntegerField, Sum, F
+
     def get_queryset(self):
         """
-        Customize the queryset to include calculated fields needed for the frontend
+        Customize the queryset to include calculated fields needed for the frontend,
+        and apply user-based filtering for access control.
         """
-        queryset = PartnerProfile.objects.select_related('user').prefetch_related(
-            'user__referrals', 
-            'selected_products'
-        ).annotate(
-    total_referrals_count=Count('user__referrals'),
-    converted_referrals_count=Count(
-        Case(
-            When(user__referrals__status='converted', then=1),
-            output_field=IntegerField()
-        )
-    )
-)
+        user = self.request.user
 
-        
-        # Add calculated fields for earnings (adjust as needed based on your models)
-        # Assuming the earnings model has a partner field related to PartnerProfile
+        # Optimized queryset with proper prefetching
+        queryset = PartnerProfile.objects.select_related('user').prefetch_related(
+            'user__referrals',
+            Prefetch('selected_products', queryset=Product.objects.all()),
+            'testimonials'
+        ).annotate(
+            total_referrals_count=Count('user__referrals'),
+            converted_referrals_count=Count(
+                Case(
+                    When(user__referrals__status='converted', then=1),
+                    output_field=IntegerField()
+                )
+            )
+        )
+
+        # Add calculated fields for earnings if the model supports it
         if hasattr(self, 'earnings'):
-                queryset = queryset.annotate(
-                    total_earnings=Sum(
-                        Case(
-                            When(earnings__status__in=['available', 'paid'], then=F('earnings__amount')),
-                            default=0,
-                            output_field=IntegerField()
-                        )
-                    ),
-                    available_earnings=Sum(
-                        Case(
-                            When(earnings__status='available', then=F('earnings__amount')),
-                            default=0,
-                            output_field=IntegerField()
-                        )
-                    ),
-                    pending_earnings=Sum(
-                        Case(
-                            When(earnings__status='pending', then=F('earnings__amount')),
-                            default=0,
-                            output_field=IntegerField()
-                        )
+            queryset = queryset.annotate(
+                total_earnings=Sum(
+                    Case(
+                        When(earnings__status__in=['available', 'paid'], then=F('earnings__amount')),
+                        default=0,
+                        output_field=IntegerField()
+                    )
+                ),
+                available_earnings=Sum(
+                    Case(
+                        When(earnings__status='available', then=F('earnings__amount')),
+                        default=0,
+                        output_field=IntegerField()
+                    )
+                ),
+                pending_earnings=Sum(
+                    Case(
+                        When(earnings__status='pending', then=F('earnings__amount')),
+                        default=0,
+                        output_field=IntegerField()
                     )
                 )
-            
+            )
+
+        # Apply user-based access control
+        if not (user.is_staff or user.is_superuser):
+            queryset = queryset.filter(user=user)
+
         return queryset
 
+
+    def _handle_selected_products(self, partner_profile):
+        """
+        Handle the creation or update of products associated with a partner profile.
+        """
+        # Try both snake_case and camelCase field names
+        selected_products_data = self.request.data.get('selected_products')
+        if not selected_products_data:
+            selected_products_data = self.request.data.get('selectedProducts')
+        
+        if selected_products_data:
+            import json
+            if isinstance(selected_products_data, str):
+                try:
+                    selected_products_data = json.loads(selected_products_data)
+                except json.JSONDecodeError:
+                    print("Error parsing JSON string")
+                    selected_products_data = []
+            
+            # Clear existing products and create new associations
+            partner_profile.selected_products.clear()
+            
+            # Process each product
+            products = []
+            for product_data in selected_products_data:
+                product_id = product_data.get("id")
+                if product_id:
+                    try:
+                        # Try to get existing product
+                        product = Product.objects.get(id=product_id)
+                        # Update product fields with the incoming data
+                        for field in ['title', 'description', 'commission', 'price', 'cost', 
+                                    'category', 'type', 'features', 'exclusive']:
+                            if field in product_data:
+                                setattr(product, field, product_data[field])
+                        product.save()
+                    except Product.DoesNotExist:
+                        # If it doesn't exist, create it with all fields
+                        product = Product.objects.create(
+                            id=product_id,
+                            title=product_data.get("title", ""),
+                            name=product_data.get("name", product_data.get("title", "")),  # Fallback to title if name not provided
+                            description=product_data.get("description", ""),
+                            commission=product_data.get("commission", ""),
+                            price=product_data.get("price", ""),
+                            cost=product_data.get("cost", ""),
+                            category=product_data.get("category", ""),
+                            type=product_data.get("type", ""),
+                            features=product_data.get("features", []),
+                            exclusive=product_data.get("exclusive", False),
+                            delivery_time=product_data.get("deliveryTime", ""),
+                            support_duration=product_data.get("supportDuration", ""),
+                            svg_image=product_data.get("svgImage", None),
+                            process_link=product_data.get("processLink", None),
+                            booking_path=product_data.get("bookingPath", None)
+                        )
+                    products.append(product)
+            
+            # Print debug info
+            print(f"Associated {len(products)} products with partner profile {partner_profile.id}")
+            
+            # Associate products with partner profile
+            partner_profile.selected_products.set(products)
+            
+    def _handle_testimonials(self, partner_profile):
+        testimonial_count = int(self.request.data.get('testimonial_count', 0))
+        for i in range(testimonial_count):
+            prefix = f'testimonials_data[{i}]'
+            testimonial_type = self.request.data.get(f'{prefix}[type]')
+            author = self.request.data.get(f'{prefix}[author]')
+            content = self.request.data.get(f'{prefix}[content]')
+            role = self.request.data.get(f'{prefix}[role]', '')
+            company = self.request.data.get(f'{prefix}[company]', '')
+            file = self.request.FILES.get(f'{prefix}[file]')
+
+            if not testimonial_type or not author:
+                continue
+            if testimonial_type == 'text' and not content:
+                continue
+            if testimonial_type in ['image', 'video'] and not file:
+                continue
+
+            # Delegate testimonial creation to a dedicated method or serializer
+            testimonial = Testimonial.objects.create(
+                type=testimonial_type,
+                content=content if testimonial_type == 'text' else None,
+                author=author,
+                role=role,
+                company=company,
+                image=file if testimonial_type == 'image' else None,
+                video=file if testimonial_type == 'video' else None,
+            )
+            partner_profile.testimonials.add(testimonial)
+
+    @action(detail=True, methods=['post'])
+    def add_testimonial(self, request, pk=None):
+        profile = self.get_object()
+        testimonial_type = request.data.get('type', 'text')
+        author = request.data.get('author')
+
+        if testimonial_type == 'text':
+            content = request.data.get('content')
+            if not content or not author:
+                return Response({'error': 'Content and author are required for text testimonials'}, status=status.HTTP_400_BAD_REQUEST)
+            testimonial = Testimonial.objects.create(
+                type='text',
+                content=content,
+                author=author,
+                role=request.data.get('role', ''),
+                company=request.data.get('company', '')
+            )
+
+        elif testimonial_type == 'image':
+            image = request.FILES.get('image')
+            if not image or not author:
+                return Response({'error': 'Image file and author are required for image testimonials'}, status=status.HTTP_400_BAD_REQUEST)
+            testimonial = Testimonial.objects.create(
+                type='image',
+                image=image,
+                author=author,
+                role=request.data.get('role', ''),
+                company=request.data.get('company', '')
+            )
+
+        elif testimonial_type == 'video':
+            video = request.FILES.get('video')
+            if not video or not author:
+                return Response({'error': 'Video file and author are required for video testimonials'}, status=status.HTTP_400_BAD_REQUEST)
+            testimonial = Testimonial.objects.create(
+                type='video',
+                video=video,
+                author=author,
+                role=request.data.get('role', ''),
+                company=request.data.get('company', '')
+            )
+
+        else:
+            return Response({'error': 'Invalid testimonial type'}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile.testimonials.add(testimonial)
+        return Response(TestimonialSerializer(testimonial).data, status=status.HTTP_201_CREATED)
+    
+    def _generate_unique_slug(self, base_text):
+        base_slug = slugify(base_text)
+        slug = base_slug
+        counter = 1
+        while PartnerProfile.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        return slug
+
+    @action(detail=True, methods=['delete'])
+    def remove_testimonial(self, request, pk=None):
+        profile = self.get_object()
+        testimonial_id = request.data.get('testimonial_id')
+
+        if not testimonial_id:
+            return Response({'error': 'Testimonial ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            testimonial = profile.testimonials.get(id=testimonial_id)
+            profile.testimonials.remove(testimonial)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Testimonial.DoesNotExist:
+            return Response({'error': 'Testimonial not found'}, status=status.HTTP_404_NOT_FOUND)
         # Add calculated fields for total earnings, available earnings, and pending earnings        
     def list(self, request):
         """
@@ -103,10 +365,9 @@ class PartnerViewSet(viewsets.ModelViewSet):
         return Response(partners_data)
     
     
-    def retrieve(self, request, pk=None):
-        """
-        Override retrieve method to return detailed partner data
-        """
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        print("Raw products:", list(instance.selected_products.all()))
         try:
             partner = self.get_object()
         except:
@@ -478,7 +739,7 @@ class PartnerViewSet(viewsets.ModelViewSet):
             )[:10]
             
             return Response(activities_sorted)
-    
+
     # Add this to your PartnerViewSet
     @action(detail=False, methods=['get'], url_path='stats/referrals')
     def referral_stats(self, request):
@@ -597,6 +858,167 @@ class PartnerViewSet(viewsets.ModelViewSet):
         print(f"Monthly stats response: {response_data}")
         
         return Response(response_data)
+@api_view(['GET', 'POST'])
+def store_selected_products(request, partner_id=None):
+    """
+    Endpoint to store and retrieve selected products for partner profiles.
+    GET: View selected products for a specific partner (public if allowed, otherwise admin only)
+    POST: Only partner owners or admins can modify selected products
+    
+    Supports both string and UUID partner IDs
+    """
+    
+    # Helper function to check admin status
+    def is_admin_user(user):
+        return user.is_authenticated and (user.is_staff or user.is_superuser)
+    
+    # Helper function to get partner profile by ID (handles both string and UUID)
+    def get_partner_profile(partner_id):
+        try:
+            # First try direct lookup (works for both string and UUID if database supports it)
+            return PartnerProfile.objects.get(id=partner_id)
+        except (PartnerProfile.DoesNotExist, ValueError):
+            try:
+                # If direct lookup fails, try filtering with exact string match
+                return PartnerProfile.objects.filter(id=partner_id).first()
+            except Exception:
+                return None
+    
+    # ---------- GET request handling ----------
+    if request.method == 'GET':
+        if not partner_id:
+            if not is_admin_user(request.user):
+                return Response(
+                    {'error': 'Partner ID is required for non-admin users'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            # Admin viewing all products
+            all_products = Product.objects.filter(partners__isnull=False).distinct()
+            serializer = ProductSerializer(all_products, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        partner_profile = get_partner_profile(partner_id)
+        if not partner_profile:
+            return Response(
+                {'error': 'Partner profile not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+            
+        products = partner_profile.selected_products.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # ---------- POST request handling ----------
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        if not partner_id:
+            return Response(
+                {'error': 'Partner ID is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        partner_profile = get_partner_profile(partner_id)
+        if not partner_profile:
+            return Response(
+                {'error': 'Partner profile not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Check permissions: either owner or admin
+        if not (str(partner_profile.user.id) == str(request.user.id) or is_admin_user(request.user)):
+            return Response(
+                {'error': 'You can only modify your own partner profile'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get selected products data from request
+        selected_products_data = request.data.get('selected_products', [])
+        if not selected_products_data:
+            # Try parsing from a JSON string if necessary (from FormData)
+            selected_products_str = request.data.get('selectedProducts')
+            if selected_products_str:
+                try:
+                    selected_products_data = json.loads(selected_products_str) if isinstance(selected_products_str, str) else selected_products_str
+                except json.JSONDecodeError:
+                    return Response(
+                        {'error': 'Invalid JSON format for selected products'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+        
+        if not isinstance(selected_products_data, list):
+            return Response(
+                {'error': 'Selected products data must be a list'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Clear existing products and create new associations
+        partner_profile.selected_products.clear()
+        
+        products = []
+        for product_data in selected_products_data:
+            product_id = product_data.get('id')
+            
+            if product_id:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    # Update product fields
+                    field_mappings = {
+                        'delivery_time': 'deliveryTime',
+                        'support_duration': 'supportDuration',
+                        'svg_image': 'svgImage',
+                        'process_link': 'processLink',
+                        'booking_path': 'bookingPath'
+                    }
+                    
+                    for field in [
+                        'name', 'title', 'description', 'commission', 'price', 'cost',
+                        'category', 'delivery_time', 'support_duration', 'svg_image',
+                        'process_link', 'exclusive', 'booking_path', 'features', 'type'
+                    ]:
+                        frontend_field = field_mappings.get(field, field)
+                        value = product_data.get(frontend_field)
+                        if value is not None:
+                            setattr(product, field, value)
+                    
+                    product.save()
+                
+                except Product.DoesNotExist:
+                    # Create new product
+                    product = Product.objects.create(
+                        id=product_id,
+                        name=product_data.get('name', ''),
+                        title=product_data.get('title', ''),
+                        description=product_data.get('description', ''),
+                        commission=product_data.get('commission', ''),
+                        price=product_data.get('price', ''),
+                        cost=product_data.get('cost', ''),
+                        delivery_time=product_data.get('deliveryTime', ''),
+                        support_duration=product_data.get('supportDuration', ''),
+                        svg_image=product_data.get('svgImage', None),
+                        process_link=product_data.get('processLink', None),
+                        exclusive=product_data.get('exclusive', None),
+                        booking_path=product_data.get('bookingPath', None),
+                        features=product_data.get('features', []),
+                        category=product_data.get('category', ''),
+                        type=product_data.get('type', '')
+                    )
+                
+                products.append(product)
+        
+        partner_profile.selected_products.add(*products)
+        
+        return Response({
+            'message': 'Products saved successfully',
+            'count': len(products),
+            'partner_id': str(partner_profile.id)  # Ensure ID is stringified
+        }, status=status.HTTP_200_OK)
+    
+
 
 class PartnerOnboardingLinkViewSet(viewsets.ModelViewSet):
     queryset = PartnerOnboardingLink.objects.all()

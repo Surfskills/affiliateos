@@ -1,4 +1,3 @@
-# partner/models.py
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -10,46 +9,42 @@ class Product(models.Model):
     title = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    commission = models.DecimalField(max_digits=5, decimal_places=2)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    commission = models.CharField(max_length=100)
+    price = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
     delivery_time = models.CharField(max_length=100, null=True, blank=True)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    cost = models.CharField(max_length=100, null=True, blank=True)
     support_duration = models.CharField(max_length=100, null=True, blank=True)
-    svg_image = models.TextField(null=True, blank=True)
+    svg_image = models.TextField(null=True, blank=True)  # Store SVG as text
     process_link = models.URLField(max_length=255, null=True, blank=True)
-    exclusive = models.BooleanField(default=False)
+    exclusive = models.CharField(max_length=255, null=True, blank=True)
     booking_path = models.CharField(max_length=255, null=True, blank=True)
-    features = models.JSONField(default=dict)
+    features = models.JSONField(null=True, blank=True)
     category = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
+    
+    # ✅ Added fields
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['is_active']),
-            models.Index(fields=['category']),
-            models.Index(fields=['type']),
-        ]
-
     def __str__(self):
-        return f"{self.name} ({self.commission}%)"
-    
+        return self.name
+
+    # ✅ Added computed properties
     @property
     def total_referrals(self):
         return self.referrals.count()
-    
+
     @property
     def converted_referrals(self):
         return self.referrals.filter(status='converted').count()
-    
+
     @property
     def conversion_rate(self):
         total = self.total_referrals
         return (self.converted_referrals / total) * 100 if total > 0 else 0
+
 
 class Testimonial(models.Model):
     class TestimonialType(models.TextChoices):
@@ -61,20 +56,40 @@ class Testimonial(models.Model):
     author = models.CharField(max_length=255)
     role = models.CharField(max_length=255, null=True, blank=True)
     company = models.CharField(max_length=255, null=True, blank=True)
-    type = models.CharField(max_length=10, choices=TestimonialType.choices, default=TestimonialType.TEXT)
-    image = models.ImageField(upload_to='testimonials/images/', null=True, blank=True)
-    video = models.FileField(upload_to='testimonials/videos/', null=True, blank=True)
-    is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)  # ✅ Added
+    is_approved = models.BooleanField(default=False)  # ✅ Added
+    type = models.CharField(
+        max_length=10,
+        choices=TestimonialType.choices,
+        default=TestimonialType.TEXT
+    )
+    image = models.ImageField(
+        upload_to='testimonials/images/', 
+        null=True, 
+        blank=True,
+        help_text="Required for image testimonials"
+    )
+    video = models.FileField(
+        upload_to='testimonials/videos/', 
+        null=True, 
+        blank=True,
+        help_text="Required for video testimonials"
+    )
 
     class Meta:
         ordering = ['-created_at']
-        verbose_name = _("Testimonial")
-        verbose_name_plural = _("Testimonials")
-
+    
     def __str__(self):
-        return f"{self.author} - {self.get_type_display()}"
+        return f"{self.author} - {self.get_type_display()} testimonial"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.type == 'image' and not self.image:
+            raise ValidationError("Image is required for image testimonials")
+        if self.type == 'video' and not self.video:
+            raise ValidationError("Video is required for video testimonials")
+
 
 class PartnerProfile(models.Model):
     class Status(models.TextChoices):
@@ -112,7 +127,7 @@ class PartnerProfile(models.Model):
     generated_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     support_availability = models.CharField(max_length=50, blank=True, null=True)
     theme = models.CharField(max_length=10, choices=Theme.choices, default=Theme.LIGHT)
-    selected_products = models.ManyToManyField(Product, related_name='partners', blank=True)
+    selected_products = models.ManyToManyField(Product, related_name='partners')
     testimonials = models.ManyToManyField(Testimonial, related_name='partners', blank=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -138,11 +153,9 @@ class PartnerProfile(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(f"{self.company or self.name}-{uuid.uuid4().hex[:4]}")
-        
         if not self.referral_code:
             self.referral_code = f"REF-{uuid.uuid4().hex[:8].upper()}"
             self.referral_link = f"/ref/{self.referral_code}"
-        
         super().save(*args, **kwargs)
 
     @property
@@ -192,10 +205,11 @@ class PartnerProfile(models.Model):
         return Earnings.objects.filter(
             partner=self
         ).exclude(status='cancelled').aggregate(total=models.Sum('amount'))['total'] or 0
-        
+
     def get_absolute_url(self):
         return f"/partner/{self.slug}/"
-    
+
+
 class PartnerOnboardingLink(models.Model):
     token = models.CharField(max_length=64, unique=True)
     created_by = models.ForeignKey(
