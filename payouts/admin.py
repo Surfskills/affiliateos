@@ -145,6 +145,19 @@ class PayoutSettingAdmin(admin.ModelAdmin):
     readonly_fields = ('updated_at',)
     list_select_related = ('partner',)
 
+    fieldsets = (
+        (None, {
+            'fields': ('partner', 'payment_method', 'payment_details')
+        }),
+        (_('Payout Preferences'), {
+            'fields': ('minimum_payout_amount', 'auto_payout', 'payout_schedule')
+        }),
+        (_('Timestamps'), {
+            'fields': ('updated_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
     def partner_display(self, obj):
         return obj.partner.name
     partner_display.short_description = _('Partner')
@@ -175,7 +188,7 @@ class EarningsAdmin(admin.ModelAdmin):
     list_filter = (
         'status',
         'source',
-        'created_at'  # 'date' field doesn't exist; using timestamps instead
+        'created_at'
     )
     search_fields = (
         'partner__user__email',

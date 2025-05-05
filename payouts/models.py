@@ -375,48 +375,70 @@ class PayoutReferral(models.Model):
     def __str__(self):
         return f"{self.payout.id} - {self.referral.client_name} (${self.amount})"
 
+
+
+
 class PayoutSetting(models.Model):
+    # Constants
+    DEFAULT_PAYMENT_METHOD = 'bank'
+    DEFAULT_PAYOUT_SCHEDULE = 'monthly'
+    DEFAULT_MINIMUM_PAYOUT = Decimal('50.00')
+    PAYOUT_SCHEDULE_CHOICES = [
+        ('manual', _('Manual')),
+        ('weekly', _('Weekly')),
+        ('biweekly', _('Bi-Weekly')),
+        ('monthly', _('Monthly')),
+        ('quarterly', _('Quarterly'))
+    ]
+    
+    # Foreign Key to PartnerProfile
     partner = models.OneToOneField(
         PartnerProfile,
         on_delete=models.CASCADE,
         related_name='payout_setting'
     )
+    
+    # Payment Method Choices
     payment_method = models.CharField(
         max_length=10,
-        choices=Payout.PaymentMethod.choices,
-        default=Payout.PaymentMethod.BANK
+        choices=Payout.PaymentMethod.choices,  # Assuming `Payout.PaymentMethod.choices` exists
+        default=DEFAULT_PAYMENT_METHOD
     )
+    
+    # Payment Details
     payment_details = models.JSONField(default=dict)
+    
+    # Minimum Payout Amount
     minimum_payout_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=Decimal('50.00')
     )
+    
+    # Auto Payout Flag
     auto_payout = models.BooleanField(default=False)
+    
+    # Payout Schedule
     payout_schedule = models.CharField(
         max_length=20,
-        choices=[
-            ('manual', _('Manual')),
-            ('weekly', _('Weekly')),
-            ('biweekly', _('Bi-Weekly')),
-            ('monthly', _('Monthly')),
-            ('quarterly', _('Quarterly'))
-        ],
+        choices=PAYOUT_SCHEDULE_CHOICES,
         default='monthly'
     )
+    
+    # Last Updated Time
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
         verbose_name = _("Payout Setting")
         verbose_name_plural = _("Payout Settings")
-        
+    
     def __str__(self):
         return f"{self.partner.name} - {self.get_payment_method_display()}"
-        
+    
     @property
     def payment_method_display(self):
         return self.get_payment_method_display()
-        
+    
     @property
     def schedule_display(self):
         return dict(self._meta.get_field('payout_schedule').choices)[self.payout_schedule]
@@ -438,6 +460,8 @@ class PayoutSetting(models.Model):
             if not self.payment_details.get('account_id'):
                 raise ValidationError("Stripe requires an account ID in payment_details.")
         super().clean()
+
+
 
 class Earnings(models.Model):
     class Source(models.TextChoices):

@@ -24,7 +24,9 @@ from .serializers import (
 )
 from django.db.transaction import atomic
 from .services import PaymentProcessor
+import logging
 
+logger = logging.getLogger(__name__)
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 25
     page_size_query_param = 'page_size'
@@ -319,6 +321,17 @@ class PayoutViewSet(viewsets.ModelViewSet):
             logger.error(f"Error in force_update_earnings: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+import logging
+from rest_framework.response import Response
+from rest_framework import status, serializers
+from rest_framework.decorators import action
+from rest_framework import viewsets, permissions
+from django_filters.rest_framework import DjangoFilterBackend
+
+# Set up the logger
+logger = logging.getLogger(__name__)
+
 class PayoutSettingViewSet(viewsets.ModelViewSet):
     queryset = PayoutSetting.objects.all()
     serializer_class = PayoutSettingSerializer
@@ -327,52 +340,270 @@ class PayoutSettingViewSet(viewsets.ModelViewSet):
     filterset_fields = ['payment_method', 'auto_payout', 'payout_schedule']
 
     def get_queryset(self):
+        logger.debug("Fetching queryset.")
         queryset = super().get_queryset()
         
         # For non-staff users, only show their own settings
         if not self.request.user.is_staff:
+            logger.debug(f"User is not staff. Filtering by partner {self.request.user.partner_profile}.")
             queryset = queryset.filter(partner__user=self.request.user)
         
         return queryset
         
-    def perform_create(self, serializer):
-        """Ensure the partner is valid before creating the setting"""
-        if not self.request.user.is_staff and not hasattr(self.request.user, 'partner_profile'):
-            raise serializers.ValidationError(
+    def create(self, request, *args, **kwargs):
+        """Handle creation of payout settings with proper validation"""
+        if not request.user.is_staff and not hasattr(request.user, 'partner_profile'):
+            logger.error("User is not a partner and attempted to create payout settings.")
+            return Response(
                 {'partner': 'You must be a partner to create payout settings'},
-                code=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST
             )
+
+        data = request.data.copy()
         
-        # Auto-assign partner for non-staff users
-        if not self.request.user.is_staff:
-            serializer.save(partner=self.request.user.partner_profile)
-        else:
-            serializer.save()
+        # For non-staff users, auto-assign their partner profile
+        if not request.user.is_staff:
+            data['partner'] = request.user.partner_profile.id
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     @action(detail=False, methods=['get'])
     def schedules(self, request):
         """Get available payout schedules"""
-        schedules = dict(PayoutSetting._meta.get_field('payout_schedule').choices)
-        return Response(schedules)
+        logger.debug("Fetching payout schedules.")
+        schedules = dict(PayoutSetting.PAYOUT_SCHEDULE_CHOICES)
+        return Response({
+            'choices': schedules,
+            'default': PayoutSetting.DEFAULT_PAYOUT_SCHEDULE
+        })
     
     @action(detail=False, methods=['get'])
     def payment_methods(self, request):
         """Get available payment methods"""
+        logger.debug("Fetching payment methods.")
         methods = dict(Payout.PaymentMethod.choices)
-        return Response(methods)
+        return Response({
+            'choices': methods,
+            'default': PayoutSetting.DEFAULT_PAYMENT_METHOD
+        })
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'patch', 'post'])
     def mine(self, request):
-        """Get the current user's payout settings"""
+        """Get, update, or create the current user's payout settings"""
         if not hasattr(request.user, 'partner_profile'):
-            return Response({'detail': 'No partner profile found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'detail': 'No partner profile found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
             
         try:
-            instance = self.get_queryset().get(partner=request.user.partner_profile)
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
+            instance = PayoutSetting.objects.get(partner=request.user.partner_profile)
         except PayoutSetting.DoesNotExist:
-            return Response({'detail': 'No payout settings found'}, status=status.HTTP_404_NOT_FOUND)
+            instance = None
+                
+        if request.method == 'GET':
+            if not instance:
+                return Response({
+                    'detail': 'No payout settings found',
+                    'defaults': {
+                        'payment_method': PayoutSetting.DEFAULT_PAYMENT_METHOD,
+                        'payout_schedule': PayoutSetting.DEFAULT_PAYOUT_SCHEDULE,
+                        'minimum_payout_amount': PayoutSetting.DEFAULT_MINIMUM_PAYOUT,
+                        'auto_payout': False
+                    }
+                }, status=status.HTTP_200_OK)
+            
+            serializer = PayoutSettingSerializer(instance)
+            return Response(serializer.data)
+
+        elif request.method == 'POST':
+            # Handle creation of new settings
+            data = request.data.copy()
+            
+            # Remove payment_details if present (should be handled via add_payment_method)
+            if 'payment_details' in data:
+                del data['payment_details']
+                
+            # Ensure minimum_payout_amount is a float
+            if 'minimum_payout_amount' in data:
+                try:
+                    data['minimum_payout_amount'] = float(data['minimum_payout_amount'])
+                except ValueError:
+                    return Response(
+                        {'detail': 'Invalid format for minimum_payout_amount'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            # Auto-assign partner
+            data['partner'] = request.user.partner_profile.id
+            
+            serializer = PayoutSettingSerializer(data=data)
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        elif request.method == 'PATCH':
+            data = request.data.copy()
+            
+            # Remove payment_details if present (should be handled via add_payment_method)
+            if 'payment_details' in data:
+                del data['payment_details']
+                
+            # Ensure minimum_payout_amount is a float
+            if 'minimum_payout_amount' in data:
+                try:
+                    data['minimum_payout_amount'] = float(data['minimum_payout_amount'])
+                except ValueError:
+                    return Response(
+                        {'detail': 'Invalid format for minimum_payout_amount'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            if instance:
+                # Update existing settings
+                serializer = PayoutSettingSerializer(instance, data=data, partial=True)
+            else:
+                # Create new settings via PATCH (fallback)
+                data['partner'] = request.user.partner_profile.id
+                serializer = PayoutSettingSerializer(data=data)
+
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            serializer.save()
+
+            if getattr(instance, '_prefetched_objects_cache', None):
+                instance._prefetched_objects_cache = {}
+
+            return Response(serializer.data)
+
+    @action(detail=False, methods=['post'])
+    def add_payment_method(self, request):
+        """
+        Add or update a payment method for the current user's payout settings
+        """
+        logger.debug("Adding or updating payment method.")
+        if not hasattr(request.user, 'partner_profile'):
+            logger.warning(f"User {request.user} does not have a partner profile.")
+            return Response(
+                {'detail': 'No partner profile found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Validate required fields
+        required_fields = ['payment_method', 'payment_details']
+        for field in required_fields:
+            if field not in request.data:
+                logger.error(f"Missing required field: {field}")
+                return Response(
+                    {'detail': f'{field} is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        payment_method = request.data['payment_method']
+        payment_details = request.data['payment_details']
+        
+        # Validate payment method
+        valid_methods = dict(Payout.PaymentMethod.choices).keys()
+        if payment_method not in valid_methods:
+            logger.error(f"Invalid payment method: {payment_method}")
+            return Response(
+                {
+                    'detail': f'Invalid payment method. Must be one of {", ".join(valid_methods)}',
+                    'valid_methods': list(valid_methods)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate payment details structure
+        if not isinstance(payment_details, dict):
+            logger.error("Payment details must be an object.")
+            return Response(
+                {'detail': 'payment_details must be an object'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Flatten details if nested under the method key
+        formatted_details = self._format_payment_details(payment_method, payment_details)
+        logger.debug(f"Formatted payment_details: {formatted_details}")
+
+        # Method-specific validation
+        validation_errors = {}
+
+        if payment_method == 'bank':
+            required_fields = ['account_name', 'account_number', 'routing_number', 'bank_name']
+            for field in required_fields:
+                if field not in formatted_details:
+                    validation_errors[field] = 'This field is required for bank transfers'
+
+        elif payment_method == 'paypal':
+            if 'email' not in formatted_details:
+                validation_errors['email'] = 'PayPal email is required'
+            elif '@' not in formatted_details['email']:
+                validation_errors['email'] = 'Enter a valid email address'
+
+        elif payment_method == 'mpesa':
+            if 'phone_number' not in formatted_details:
+                validation_errors['phone_number'] = 'M-Pesa phone number is required'
+
+        elif payment_method == 'stripe':
+            if 'account_id' not in formatted_details:
+                validation_errors['account_id'] = 'Stripe account ID is required'
+
+        if validation_errors:
+            logger.error(f"Validation failed for payment details: {validation_errors}")
+            return Response(
+                {'detail': 'Validation failed', 'errors': validation_errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Find or create the payout setting
+        try:
+            payout_setting = self.get_queryset().get(partner=request.user.partner_profile)
+            created = False
+            logger.debug(f"Found existing payout setting: {payout_setting}")
+        except PayoutSetting.DoesNotExist:
+            payout_setting = PayoutSetting(partner=request.user.partner_profile)
+            created = True
+            logger.debug(f"Created new payout setting for user.")
+
+        # Update the setting
+        payout_setting.payment_method = payment_method
+        payout_setting.payment_details = formatted_details
+        payout_setting.save()
+
+        serializer = self.get_serializer(payout_setting)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        )
+
+
+    def _format_payment_details(self, method, details):
+        """Flatten payment details, unwrapping method-specific nesting if present"""
+        logger.debug(f"Formatting payment details for method {method} with input: {details}")
+        
+        # If the method-specific key exists (e.g., {'mpesa': {phone_number: ...}}), unwrap it
+        if method in details and isinstance(details[method], dict):
+            details = details[method]
+            logger.debug(f"Unwrapped nested payment details under '{method}' key: {details}")
+        
+        # Strip strings and return
+        return {k: v.strip() if isinstance(v, str) else v for k, v in details.items()}
+
 
 class EarningsViewSet(viewsets.ModelViewSet):
     queryset = Earnings.objects.all()

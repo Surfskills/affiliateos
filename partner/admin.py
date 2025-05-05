@@ -111,28 +111,29 @@ class ProductAdmin(admin.ModelAdmin):
     deactivate_products.short_description = _("Deactivate selected products")
 
 class TestimonialAdmin(admin.ModelAdmin):
+   class TestimonialAdmin(admin.ModelAdmin):
     list_display = (
         'author',
         'company_role_display',
         'type_display',
-        'is_approved',
-        'created_at'
+        'status',  # ✅ replaces is_approved
+        'created_at',
     )
     list_filter = (
         'type',
-        'is_approved',
-        'created_at'
+        'status',  # ✅ replaces is_approved
+        'created_at',
     )
     search_fields = (
         'author',
         'company',
         'role',
-        'content'
+        'content',
     )
     readonly_fields = (
         'created_at',
         'updated_at',
-        'media_preview'
+        'media_preview',
     )
     fieldsets = (
         (_('Content'), {
@@ -141,31 +142,31 @@ class TestimonialAdmin(admin.ModelAdmin):
                 'type',
                 'image',
                 'video',
-                'media_preview'
+                'media_preview',
             )
         }),
         (_('Author Information'), {
             'fields': (
                 'author',
                 'role',
-                'company'
+                'company',
             )
         }),
         (_('Settings'), {
             'fields': (
-                'is_approved',
+                'status',  # ✅ replaces is_approved
             )
         }),
         (_('Timestamps'), {
             'fields': (
                 'created_at',
-                'updated_at'
+                'updated_at',
             ),
             'classes': ('collapse',)
         }),
     )
-    list_editable = ('is_approved',)
-    actions = ['approve_testimonials', 'disapprove_testimonials']
+    list_editable = ('status',)  # ✅ replaces is_approved
+    actions = ['approve_testimonials', 'reject_testimonials']
 
     def type_display(self, obj):
         return obj.get_type_display()
@@ -184,19 +185,22 @@ class TestimonialAdmin(admin.ModelAdmin):
         if obj.type == 'image' and obj.image:
             return format_html('<img src="{}" style="max-height: 200px;"/>', obj.image.url)
         elif obj.type == 'video' and obj.video:
-            return format_html('<video width="320" height="240" controls><source src="{}"></video>', obj.video.url)
+            return format_html(
+                '<video width="320" height="240" controls><source src="{}" type="video/mp4">Your browser does not support the video tag.</video>',
+                obj.video.url
+            )
         return "-"
     media_preview.short_description = _('Media Preview')
 
     def approve_testimonials(self, request, queryset):
-        updated = queryset.update(is_approved=True)
-        self.message_user(request, f"{updated} testimonials approved")
+        updated = queryset.update(status=Testimonial.Status.APPROVED)
+        self.message_user(request, f"{updated} testimonial(s) approved.")
     approve_testimonials.short_description = _("Approve selected testimonials")
 
-    def disapprove_testimonials(self, request, queryset):
-        updated = queryset.update(is_approved=False)
-        self.message_user(request, f"{updated} testimonials disapproved")
-    disapprove_testimonials.short_description = _("Disapprove selected testimonials")
+    def reject_testimonials(self, request, queryset):
+        updated = queryset.update(status=Testimonial.Status.REJECTED)
+        self.message_user(request, f"{updated} testimonial(s) rejected.")
+    reject_testimonials.short_description = _("Reject selected testimonials")
 
 class PartnerProfileAdmin(admin.ModelAdmin):
     list_display = (

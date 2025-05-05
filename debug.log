@@ -19585,3 +19585,1375 @@ WARNING 2025-05-04 10:10:11,329 log 20666 6208581632 Bad Request: /api/payouts/p
 WARNING 2025-05-04 10:12:30,561 log 20666 6242234368 Bad Request: /api/payouts/payouts/
 WARNING 2025-05-04 10:15:37,841 log 20666 6275887104 Bad Request: /api/payouts/payouts/
 WARNING 2025-05-04 10:16:14,751 log 20666 6191755264 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-05 04:12:09,147 log 22367 6127071232 Not Found: /api/placeholder/300/200
+INFO 2025-05-05 04:16:25,505 serializers 22367 6177550336 Creating user: cglcllsgg@gmail.com
+INFO 2025-05-05 04:16:25,761 serializers 22367 6177550336 User created successfully: cglcllsgg@gmail.com
+INFO 2025-05-05 04:41:01,174 serializers 22831 6159593472 Creating user: fred99@gmail.com
+INFO 2025-05-05 04:41:01,446 serializers 22831 6159593472 User created successfully: fred99@gmail.com
+ERROR 2025-05-05 04:43:43,455 log 22831 6176419840 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 19, in create
+    self.perform_create(serializer)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 95, in perform_create
+    self._handle_testimonials(partner_profile)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 276, in _handle_testimonials
+    testimonial = Testimonial.objects.create(
+        type="text",
+    ...<4 lines>...
+        isApproved=testimonial_data.get("isApproved", False)
+    )
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Testimonial() got unexpected keyword arguments: 'isApproved'
+WARNING 2025-05-05 04:48:03,428 log 23084 6158626816 Bad Request: /api/partner/partner-profiles/
+WARNING 2025-05-05 04:49:19,812 log 23084 6175453184 Unauthorized: /api/partner/partner-profiles/
+INFO 2025-05-05 04:50:09,793 serializers 23084 6192279552 Creating user: mmeee2@gmail.com
+INFO 2025-05-05 04:50:10,069 serializers 23084 6192279552 User created successfully: mmeee2@gmail.com
+WARNING 2025-05-05 04:53:57,410 log 23084 6175453184 Not Found: /api/partner/partner-profiles/by-referral/REF-1CDBC6F9/
+WARNING 2025-05-05 05:13:30,264 log 23084 6158626816 Not Found: /api/partner/partner-profiles/detail/1/
+ERROR 2025-05-05 05:13:53,302 log 23084 6259585024 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 549, in __int__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 397, in list
+    queryset = self.get_queryset()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 177, in get_queryset
+    queryset = queryset.filter(user=user)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/related_lookups.py", line 112, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x106452e40>.
+ERROR 2025-05-05 05:14:44,089 log 23084 6175453184 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 549, in __int__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 397, in list
+    queryset = self.get_queryset()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 177, in get_queryset
+    queryset = queryset.filter(user=user)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/related_lookups.py", line 112, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x10630e8d0>.
+ERROR 2025-05-05 05:14:47,466 log 23084 6158626816 Internal Server Error: /api/partner/partner-profiles/monthly-stats/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 549, in __int__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 836, in monthly_stats
+    profile = PartnerProfile.objects.get(user=request.user)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 619, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/related_lookups.py", line 112, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x106335d90>.
+WARNING 2025-05-05 05:35:51,384 log 23084 6225932288 Not Found: /api/partner/products
+WARNING 2025-05-05 05:35:51,393 log 23084 6242758656 Not Found: /api/partner/products
+WARNING 2025-05-05 05:36:05,092 log 23084 6192279552 Not Found: /api/partner/products
+WARNING 2025-05-05 05:36:05,102 log 23084 6209105920 Not Found: /api/partner/products
+ERROR 2025-05-05 05:36:36,018 log 23084 6225932288 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 549, in __int__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 397, in list
+    queryset = self.get_queryset()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 177, in get_queryset
+    queryset = queryset.filter(user=user)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/related_lookups.py", line 112, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x107b4caf0>.
+ERROR 2025-05-05 05:36:38,925 log 23084 6158626816 Internal Server Error: /api/partner/partner-profiles/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 549, in __int__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 397, in list
+    queryset = self.get_queryset()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 177, in get_queryset
+    queryset = queryset.filter(user=user)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/related_lookups.py", line 112, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x106500320>.
+WARNING 2025-05-05 05:38:59,120 log 23084 6175453184 Not Found: /api/partner/products
+WARNING 2025-05-05 05:38:59,130 log 23084 6192279552 Not Found: /api/partner/products
+WARNING 2025-05-05 05:42:27,649 log 23084 6209105920 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:27,661 log 23084 6242758656 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:29,067 log 23084 6259585024 Not Found: /api/partner/stats
+WARNING 2025-05-05 05:42:29,081 log 23084 6276411392 Not Found: /api/partner/stats
+WARNING 2025-05-05 05:42:30,016 log 23084 6175453184 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:30,029 log 23084 6192279552 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:48,422 log 23084 6259585024 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:48,435 log 23084 6276411392 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:50,125 log 23084 6175453184 Not Found: /api/partner/stats
+WARNING 2025-05-05 05:42:50,138 log 23084 6192279552 Not Found: /api/partner/stats
+WARNING 2025-05-05 05:42:51,994 log 23084 6209105920 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 05:42:52,005 log 23084 6242758656 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:33:12,675 log 24274 6161182720 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:33:12,687 log 24274 6178009088 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:33:16,187 log 24274 6161182720 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:33:16,200 log 24274 6178009088 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:33:20,103 log 24274 6211661824 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:33:20,117 log 24274 6161182720 Not Found: /api/partner/testimonials
+WARNING 2025-05-05 06:49:03,708 log 24274 6161182720 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:05:37,993 log 24274 6178009088 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:05:47,102 log 24274 6161182720 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:05:47,114 log 24274 6178009088 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:06:04,350 log 24274 6161182720 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:06:04,355 log 24274 6161182720 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:08:40,234 log 25131 6156251136 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:08:40,239 log 25131 6173077504 Not Found: /api/testimonials/
+WARNING 2025-05-05 07:16:00,748 log 25131 6173077504 Not Found: /api/partner/testimonials/1/approve/
+WARNING 2025-05-05 07:18:50,367 log 25131 6173077504 Not Found: /api/partner/testimonials/3/approve/
+ERROR 2025-05-05 07:22:52,031 log 25340 6161608704 Internal Server Error: /api/partner/testimonials/3/approve/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 80, in approve
+    if testimonial.status == 'approved':
+       ^^^^^^^^^^^^^^^^^^
+AttributeError: 'Testimonial' object has no attribute 'status'
+WARNING 2025-05-05 07:25:52,886 log 25399 6216708096 Bad Request: /api/partner/testimonials/3/approve/
+WARNING 2025-05-05 07:26:09,484 log 25399 6233534464 Bad Request: /api/partner/testimonials/3/approve/
+WARNING 2025-05-05 07:26:19,142 log 25399 6250360832 Bad Request: /api/partner/testimonials/2/reject/
+ERROR 2025-05-05 07:37:01,072 log 25711 6132281344 Internal Server Error: /api/partner/partner-profiles/my_profile/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 139, in my_profile
+    return Response(serializer.data)
+                    ^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 573, in data
+    ret = super().data
+          ^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 251, in data
+    self._data = self.to_representation(self.instance)
+                 ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 540, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+                            ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/fields.py", line 1870, in to_representation
+    return method(value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/serializers.py", line 92, in get_text_testimonials
+    return TestimonialSerializer(text_testimonials, many=True).data
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 797, in data
+    ret = super().data
+          ^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 251, in data
+    self._data = self.to_representation(self.instance)
+                 ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 716, in to_representation
+    self.child.to_representation(item) for item in iterable
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 525, in to_representation
+    for field in fields:
+                 ^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 386, in _readable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1105, in get_fields
+    field_class, field_kwargs = self.build_field(
+                                ~~~~~~~~~~~~~~~~^
+        source, info, model, depth
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1251, in build_field
+    return self.build_unknown_field(field_name, model_class)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1369, in build_unknown_field
+    raise ImproperlyConfigured(
+    ...<2 lines>...
+    )
+django.core.exceptions.ImproperlyConfigured: Field name `is_approved` is not valid for model `Testimonial` in `partner.serializers.TestimonialSerializer`.
+ERROR 2025-05-05 07:53:15,259 log 25737 6161149952 Internal Server Error: /api/partner/testimonials/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 82, in partial_update
+    return self.update(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 65, in update
+    instance = self.get_object()
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 103, in get_object
+    self.check_object_permissions(self.request, obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 351, in check_object_permissions
+    if not permission.has_object_permission(request, self, obj):
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 28, in has_object_permission
+    return obj.user == request.user
+           ^^^^^^^^
+AttributeError: 'Testimonial' object has no attribute 'user'
+ERROR 2025-05-05 08:04:10,364 log 26145 6199881728 Internal Server Error: /api/partner/products/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 38, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 51, in get_queryset
+    return Product.objects.filter(partnerprofile__user=self.request.user)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1523, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1330, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'partnerprofile' into field. Choices are: booking_path, category, commission, cost, created_at, delivery_time, description, exclusive, features, id, image, is_active, name, partners, price, process_link, referrals, support_duration, svg_image, title, type, updated_at
+ERROR 2025-05-05 08:04:10,387 log 26145 6166228992 Internal Server Error: /api/partner/products/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 38, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 51, in get_queryset
+    return Product.objects.filter(partnerprofile__user=self.request.user)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1523, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1330, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'partnerprofile' into field. Choices are: booking_path, category, commission, cost, created_at, delivery_time, description, exclusive, features, id, image, is_active, name, partners, price, process_link, referrals, support_duration, svg_image, title, type, updated_at
+ERROR 2025-05-05 08:05:56,026 log 26183 6195605504 Internal Server Error: /api/partner/products/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 38, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 51, in get_queryset
+    return Product.objects.filter(partnerprofile__user=self.request.user)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1523, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1330, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'partnerprofile' into field. Choices are: booking_path, category, commission, cost, created_at, delivery_time, description, exclusive, features, id, image, is_active, name, partners, price, process_link, referrals, support_duration, svg_image, title, type, updated_at
+ERROR 2025-05-05 08:05:56,050 log 26183 6212431872 Internal Server Error: /api/partner/products/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 38, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 51, in get_queryset
+    return Product.objects.filter(partnerprofile__user=self.request.user)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1523, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1330, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'partnerprofile' into field. Choices are: booking_path, category, commission, cost, created_at, delivery_time, description, exclusive, features, id, image, is_active, name, partners, price, process_link, referrals, support_duration, svg_image, title, type, updated_at
+ERROR 2025-05-05 08:08:44,820 log 26224 6201176064 Internal Server Error: /api/partner/products/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 38, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 51, in get_queryset
+    return Product.objects.filter(partnerprofile__user=self.request.user)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1523, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1330, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'partnerprofile' into field. Choices are: booking_path, category, commission, cost, created_at, delivery_time, description, exclusive, features, id, image, is_active, name, partners, price, process_link, referrals, support_duration, svg_image, title, type, updated_at
+ERROR 2025-05-05 08:08:44,840 log 26224 6218002432 Internal Server Error: /api/partner/products/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 38, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/partner/views.py", line 51, in get_queryset
+    return Product.objects.filter(partnerprofile__user=self.request.user)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1523, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1330, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1802, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'partnerprofile' into field. Choices are: booking_path, category, commission, cost, created_at, delivery_time, description, exclusive, features, id, image, is_active, name, partners, price, process_link, referrals, support_duration, svg_image, title, type, updated_at
+WARNING 2025-05-05 08:11:34,726 log 26255 6170718208 Not Found: /api/partner/stats
+WARNING 2025-05-05 08:11:34,740 log 26255 6187544576 Not Found: /api/partner/stats
+WARNING 2025-05-05 08:19:22,173 log 26255 6137065472 Not Found: /api/partner/stats
+WARNING 2025-05-05 08:19:22,185 log 26255 6153891840 Not Found: /api/partner/stats
+WARNING 2025-05-05 08:19:33,361 log 26255 6170718208 Not Found: /api/partner/stats
+WARNING 2025-05-05 08:19:33,371 log 26255 6187544576 Not Found: /api/partner/stats
+WARNING 2025-05-05 08:27:00,780 log 26255 6137065472 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:27:00,787 log 26255 6153891840 Not Found: /api/partner/monthly-stats/
+WARNING 2025-05-05 08:27:00,801 log 26255 6221197312 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:27:00,846 log 26255 6204370944 Not Found: /api/partner/monthly-stats/
+WARNING 2025-05-05 08:28:43,858 log 26255 6137065472 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:28:43,865 log 26255 6153891840 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:29:08,241 log 26724 6203437056 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:29:08,252 log 26724 6237089792 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:29:31,241 log 26724 6203437056 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:29:31,251 log 26724 6237089792 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:31:45,308 log 26724 6203437056 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:31:59,310 log 26724 6203437056 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:31:59,319 log 26724 6237089792 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:33:17,924 log 26867 6127415296 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 08:33:17,931 log 26867 6161068032 Not Found: /api/partner/metrics/
+WARNING 2025-05-05 09:04:09,080 log 26867 6127415296 Not Found: /api/partner/partner-profiles/by-referral/partners/
+WARNING 2025-05-05 10:25:36,600 log 27621 6235566080 Method Not Allowed: /api/payouts/payout-settings/
+WARNING 2025-05-05 10:26:09,145 log 28071 6196146176 Method Not Allowed: /api/payouts/payout-settings/
+WARNING 2025-05-05 10:29:05,216 log 28071 6196146176 Method Not Allowed: /api/payouts/payout-settings/
+WARNING 2025-05-05 11:37:17,462 log 28217 6179631104 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 11:37:17,470 log 28217 6129152000 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 11:41:47,382 log 28217 6129152000 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 11:41:47,389 log 28217 6145978368 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 12:23:04,137 log 29159 6128316416 Method Not Allowed: /api/payouts/payout-settings/
+WARNING 2025-05-05 12:58:57,991 log 29159 6178795520 Not Found: /api/api/payout-settings//
+WARNING 2025-05-05 12:58:57,993 log 29159 6195621888 Not Found: /api/api/payout-settings/schedules/
+WARNING 2025-05-05 12:58:57,994 log 29159 6212448256 Not Found: /api/api/payout-settings/payment_methods/
+WARNING 2025-05-05 12:59:20,092 log 29159 6145142784 Not Found: /api/api/payout-settings/schedules/
+WARNING 2025-05-05 12:59:20,095 log 29159 6128316416 Not Found: /api/api/payout-settings/payment_methods/
+WARNING 2025-05-05 12:59:20,098 log 29159 6161969152 Not Found: /api/api/payout-settings//
+WARNING 2025-05-05 12:59:20,104 log 29159 6145142784 Not Found: /api/api/payout-settings/schedules/
+WARNING 2025-05-05 12:59:20,107 log 29159 6128316416 Not Found: /api/api/payout-settings//
+WARNING 2025-05-05 12:59:20,110 log 29159 6161969152 Not Found: /api/api/payout-settings/payment_methods/
+WARNING 2025-05-05 13:00:03,409 log 29159 6229274624 Not Found: /api/api/payout-settings/payouts/schedules/
+WARNING 2025-05-05 13:00:03,411 log 29159 6246100992 Not Found: /api/api/payout-settings/payouts/payment_methods/
+WARNING 2025-05-05 13:00:03,412 log 29159 6262927360 Not Found: /api/api/payout-settings/payouts//
+WARNING 2025-05-05 13:00:03,415 log 29159 6229274624 Not Found: /api/api/payout-settings/payouts/schedules/
+WARNING 2025-05-05 13:00:03,417 log 29159 6262927360 Not Found: /api/api/payout-settings/payouts//
+WARNING 2025-05-05 13:00:03,419 log 29159 6279753728 Not Found: /api/api/payout-settings/payouts/payment_methods/
+WARNING 2025-05-05 13:00:39,908 log 29899 6294777856 Not Found: /api/api/payouts/payment_methods/
+WARNING 2025-05-05 13:00:39,911 log 29899 6311604224 Not Found: /api/api/payouts/schedules/
+WARNING 2025-05-05 13:00:39,914 log 29899 6328430592 Not Found: /api/api/payouts//
+WARNING 2025-05-05 13:00:39,921 log 29899 6345256960 Not Found: /api/api/payouts/payment_methods/
+WARNING 2025-05-05 13:00:39,923 log 29899 6328430592 Not Found: /api/api/payouts//
+WARNING 2025-05-05 13:00:39,925 log 29899 6294777856 Not Found: /api/api/payouts/schedules/
+WARNING 2025-05-05 13:01:18,102 log 29899 6294777856 Not Found: /api/api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:01:18,106 log 29899 6311604224 Not Found: /api/api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:01:18,110 log 29899 6328430592 Not Found: /api/api/payouts/payouts//
+WARNING 2025-05-05 13:01:18,117 log 29899 6311604224 Not Found: /api/api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:01:18,120 log 29899 6345256960 Not Found: /api/api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:01:18,123 log 29899 6294777856 Not Found: /api/api/payouts/payouts//
+WARNING 2025-05-05 13:01:49,626 log 29899 6328430592 Not Found: /api/payouts/payouts//
+WARNING 2025-05-05 13:01:49,630 log 29899 6294777856 Not Found: /api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:01:49,631 log 29899 6311604224 Not Found: /api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:01:49,639 log 29899 6345256960 Not Found: /api/payouts/payouts//
+WARNING 2025-05-05 13:01:49,644 log 29899 6328430592 Not Found: /api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:01:49,645 log 29899 6311604224 Not Found: /api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:02:09,878 log 29977 6186266624 Not Found: /api/payouts/payouts//
+WARNING 2025-05-05 13:02:09,881 log 29977 6169440256 Not Found: /api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:02:09,883 log 29977 6152613888 Not Found: /api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:02:09,892 log 29977 6203092992 Not Found: /api/payouts/payouts//
+WARNING 2025-05-05 13:02:09,898 log 29977 6186266624 Not Found: /api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:02:09,901 log 29977 6169440256 Not Found: /api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:02:37,552 log 30017 6199177216 Not Found: /api/api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:02:37,557 log 30017 6216003584 Not Found: /api/api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:02:37,562 log 30017 6232829952 Not Found: /api/api/payouts/payouts//
+WARNING 2025-05-05 13:02:37,569 log 30017 6232829952 Not Found: /api/api/payouts/payouts/schedules/
+WARNING 2025-05-05 13:02:37,572 log 30017 6199177216 Not Found: /api/api/payouts/payouts/payment_methods/
+WARNING 2025-05-05 13:02:37,574 log 30017 6249656320 Not Found: /api/api/payouts/payouts//
+WARNING 2025-05-05 13:11:11,423 log 30139 6260748288 Not Found: /api/api/payouts/payout-settings/schedules/
+WARNING 2025-05-05 13:11:11,424 log 30139 6227095552 Not Found: /api/api/payouts/payout-settings/payment_methods/
+WARNING 2025-05-05 13:11:11,427 log 30139 6243921920 Not Found: /api/api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:11:11,434 log 30139 6260748288 Not Found: /api/api/payouts/payout-settings/schedules/
+WARNING 2025-05-05 13:11:11,437 log 30139 6277574656 Not Found: /api/api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:11:11,439 log 30139 6227095552 Not Found: /api/api/payouts/payout-settings/payment_methods/
+ERROR 2025-05-05 13:12:27,595 log 30182 6206124032 Internal Server Error: /api/payouts/payout-settings/payment_methods/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 368, in payment_methods
+    'default': PayoutSetting.DEFAULT_PAYMENT_METHOD
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYMENT_METHOD'
+ERROR 2025-05-05 13:12:27,596 log 30182 6222950400 Internal Server Error: /api/payouts/payout-settings/schedules/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 356, in schedules
+    schedules = dict(PayoutSetting.PAYOUT_SCHEDULE_CHOICES)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'PAYOUT_SCHEDULE_CHOICES'
+ERROR 2025-05-05 13:12:27,601 log 30182 6155644928 Internal Server Error: /api/payouts/payout-settings/mine/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 390, in mine
+    'payment_method': PayoutSetting.DEFAULT_PAYMENT_METHOD,
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYMENT_METHOD'
+ERROR 2025-05-05 13:12:27,622 log 30182 6239776768 Internal Server Error: /api/payouts/payout-settings/payment_methods/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 368, in payment_methods
+    'default': PayoutSetting.DEFAULT_PAYMENT_METHOD
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYMENT_METHOD'
+ERROR 2025-05-05 13:12:27,637 log 30182 6206124032 Internal Server Error: /api/payouts/payout-settings/schedules/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 356, in schedules
+    schedules = dict(PayoutSetting.PAYOUT_SCHEDULE_CHOICES)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'PAYOUT_SCHEDULE_CHOICES'
+ERROR 2025-05-05 13:12:27,648 log 30182 6256603136 Internal Server Error: /api/payouts/payout-settings/mine/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 390, in mine
+    'payment_method': PayoutSetting.DEFAULT_PAYMENT_METHOD,
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYMENT_METHOD'
+ERROR 2025-05-05 13:16:10,543 log 30289 6219673600 Internal Server Error: /api/payouts/payout-settings/schedules/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 359, in schedules
+    'default': PayoutSetting.DEFAULT_PAYOUT_SCHEDULE
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYOUT_SCHEDULE'
+ERROR 2025-05-05 13:16:10,548 log 30289 6236499968 Internal Server Error: /api/payouts/payout-settings/mine/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 391, in mine
+    'payout_schedule': PayoutSetting.DEFAULT_PAYOUT_SCHEDULE,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYOUT_SCHEDULE'
+ERROR 2025-05-05 13:16:10,570 log 30289 6202847232 Internal Server Error: /api/payouts/payout-settings/mine/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 391, in mine
+    'payout_schedule': PayoutSetting.DEFAULT_PAYOUT_SCHEDULE,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYOUT_SCHEDULE'
+ERROR 2025-05-05 13:16:10,581 log 30289 6253326336 Internal Server Error: /api/payouts/payout-settings/schedules/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 359, in schedules
+    'default': PayoutSetting.DEFAULT_PAYOUT_SCHEDULE
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_PAYOUT_SCHEDULE'
+ERROR 2025-05-05 13:17:14,543 log 30297 6202372096 Internal Server Error: /api/payouts/payout-settings/mine/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 392, in mine
+    'minimum_payout_amount': PayoutSetting.DEFAULT_MINIMUM_PAYOUT,
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_MINIMUM_PAYOUT'
+ERROR 2025-05-05 13:17:14,559 log 30297 6219198464 Internal Server Error: /api/payouts/payout-settings/mine/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 392, in mine
+    'minimum_payout_amount': PayoutSetting.DEFAULT_MINIMUM_PAYOUT,
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'PayoutSetting' has no attribute 'DEFAULT_MINIMUM_PAYOUT'
+WARNING 2025-05-05 13:18:16,534 log 30322 6216937472 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:18:16,542 log 30322 6200111104 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:19:28,475 log 30322 6166458368 Not Found: /api/partner/payout-settings/mine/
+WARNING 2025-05-05 13:20:11,762 log 30322 6183284736 Unauthorized: /api/payouts/payout-settings/
+WARNING 2025-05-05 13:20:33,970 log 30322 6200111104 Unauthorized: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:23:18,807 log 30322 6216937472 Unauthorized: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:23:31,589 log 30322 6200111104 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:23:31,596 log 30322 6216937472 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:25:03,476 log 30322 6216937472 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:25:03,483 log 30322 6200111104 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:28:45,831 log 30583 6234255360 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:28:45,836 log 30583 6200602624 Not Found: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 13:35:32,554 log 30631 6149009408 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 13:35:51,970 log 30631 6165835776 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 13:38:52,794 log 30703 6131412992 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 13:39:30,806 log 30703 6131412992 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 13:45:37,964 log 30703 6148239360 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 13:46:43,878 log 30703 6131412992 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:14:51,442 log 30703 6148239360 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:15:37,500 log 30703 6165065728 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:17:19,216 log 30703 6181892096 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:20:13,147 log 30703 6148239360 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:23:25,967 log 31101 6156759040 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:25:47,726 log 31133 6161805312 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:31:34,420 log 31172 6162100224 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:33:08,624 log 31194 6193623040 Bad Request: /api/payouts/payout-settings/add_payment_method/
+WARNING 2025-05-05 14:44:55,725 log 31230 6186348544 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 14:45:32,959 log 31230 6203174912 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 14:46:24,749 log 31230 6220001280 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:36:30,004 log 31230 6169522176 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:45:27,818 log 31230 6169522176 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:46:03,102 log 31230 6186348544 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:50:14,418 log 31882 6195802112 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:51:42,593 log 31901 6191017984 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:52:33,434 log 31901 6191017984 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 15:54:40,527 log 31944 6162018304 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 16:00:18,813 log 32028 6189854720 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 16:07:23,555 log 32028 6189854720 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 16:07:49,892 log 32200 6210072576 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 16:48:42,692 log 32200 6193246208 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 16:53:22,861 log 32200 6193246208 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 16:59:28,652 log 32200 6193246208 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 17:02:38,990 log 32200 6210072576 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 17:28:30,536 log 32200 6243725312 Bad Request: /api/payouts/payout-settings/mine/
+WARNING 2025-05-05 17:28:38,196 log 32200 6260551680 Bad Request: /api/payouts/payout-settings/mine/

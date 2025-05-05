@@ -23,8 +23,18 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     Custom permission to only allow owners of a profile to edit it.
     """
     def has_object_permission(self, request, view, obj):
+        # Allow safe methods for all users (GET, OPTIONS, HEAD)
         if request.method in permissions.SAFE_METHODS:
             return True
+        
+        # Check if the object is related to the user's PartnerProfile
+        if isinstance(obj, Product):
+            return obj in request.user.partner_profile.selected_products.all()
+        
+        if isinstance(obj, Testimonial):
+            return obj in request.user.partner_profile.testimonials.all()
+
+        # Default check if the object is owned by the authenticated user
         return obj.user == request.user
 
 
@@ -35,12 +45,19 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Allow anyone to read, authenticated users to write
-
+    
+    def get_queryset(self):
+        # Retrieve the products that are associated with the authenticated user's PartnerProfile
+        partner_profile = self.request.user.partner_profile  # Access PartnerProfile via user
+        return partner_profile.selected_products.all()  # Access the products linked to the PartnerProfile
+    
     def get_permissions(self):
+        # For update, partial update, and destroy actions, check if the user is the owner
         if self.action in ['update', 'partial_update', 'destroy']:
-            # For update and delete operations, check if user is owner
             return [IsAuthenticated(), IsOwnerOrReadOnly()]
         return super().get_permissions()
+
+
 
 
 class TestimonialViewSet(viewsets.ModelViewSet):
@@ -50,15 +67,18 @@ class TestimonialViewSet(viewsets.ModelViewSet):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
-    permission_classes = [IsAuthenticatedOrReadOnly] 
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_permissions(self):
+        # For update, partial update, and delete actions, check if the user is the owner
         if self.action in ['update', 'partial_update', 'destroy']:
-            # For update and delete operations, check if user is owner
             return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        elif self.action in ['approve', 'reject']:
+            return [IsAuthenticated()]  # Optional: Restrict to admin here
         return super().get_permissions()
 
     def create(self, request, *args, **kwargs):
+        # Validate the input data based on testimonial type
         testimonial_type = request.data.get('type', 'text')
 
         if testimonial_type == 'text' and not request.data.get('content'):
@@ -71,6 +91,26 @@ class TestimonialViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Video file is required for video testimonials'}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        testimonial = self.get_object()
+        if testimonial.status == Testimonial.Status.APPROVED:
+            return Response({'detail': 'Already approved'}, status=status.HTTP_400_BAD_REQUEST)
+        testimonial.status = Testimonial.Status.APPROVED
+        testimonial.save()
+        return Response({'status': 'approved'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        testimonial = self.get_object()
+        if testimonial.status == Testimonial.Status.REJECTED:
+            return Response({'detail': 'Already rejected'}, status=status.HTTP_400_BAD_REQUEST)
+        testimonial.status = Testimonial.Status.REJECTED
+        testimonial.save()
+        return Response({'status': 'rejected'}, status=status.HTTP_200_OK)
+
+
 
 
 class PartnerViewSet(viewsets.ModelViewSet):
@@ -243,35 +283,81 @@ class PartnerViewSet(viewsets.ModelViewSet):
             partner_profile.selected_products.set(products)
             
     def _handle_testimonials(self, partner_profile):
-        testimonial_count = int(self.request.data.get('testimonial_count', 0))
-        for i in range(testimonial_count):
-            prefix = f'testimonials_data[{i}]'
-            testimonial_type = self.request.data.get(f'{prefix}[type]')
-            author = self.request.data.get(f'{prefix}[author]')
-            content = self.request.data.get(f'{prefix}[content]')
-            role = self.request.data.get(f'{prefix}[role]', '')
-            company = self.request.data.get(f'{prefix}[company]', '')
-            file = self.request.FILES.get(f'{prefix}[file]')
-
-            if not testimonial_type or not author:
+        """
+        Handle the creation or update of testimonials associated with a partner profile.
+        """
+        # Try both snake_case and camelCase field names
+        testimonials_data = self.request.data.get('testimonials')
+        if not testimonials_data:
+            testimonials_data = self.request.data.get('testimonials')
+        
+        if isinstance(testimonials_data, str):
+            try:
+                testimonials_data = json.loads(testimonials_data)
+            except json.JSONDecodeError:
+                print("Error parsing JSON string for testimonials")
+                testimonials_data = []
+        
+        if not isinstance(testimonials_data, list):
+            print("Testimonials data is not a list")
+            return
+        
+        # Clear existing testimonials and create new ones
+        partner_profile.testimonials.clear()
+        
+        # Process each testimonial
+        for testimonial_data in testimonials_data:
+            testimonial_type = testimonial_data.get("type")
+            if not testimonial_type:
                 continue
-            if testimonial_type == 'text' and not content:
-                continue
-            if testimonial_type in ['image', 'video'] and not file:
-                continue
-
-            # Delegate testimonial creation to a dedicated method or serializer
-            testimonial = Testimonial.objects.create(
-                type=testimonial_type,
-                content=content if testimonial_type == 'text' else None,
-                author=author,
-                role=role,
-                company=company,
-                image=file if testimonial_type == 'image' else None,
-                video=file if testimonial_type == 'video' else None,
-            )
-            partner_profile.testimonials.add(testimonial)
-
+                
+            # Handle text testimonials
+            if testimonial_type == "text":
+                testimonial = Testimonial.objects.create(
+                    type="text",
+                    content=testimonial_data.get("content", ""),
+                    author=testimonial_data.get("author", ""),
+                    role=testimonial_data.get("role", ""),
+                    company=testimonial_data.get("company", ""),
+                    is_approved=testimonial_data.get("isApproved", False)
+                )
+                partner_profile.testimonials.add(testimonial)
+            
+            # Handle image testimonials
+            elif testimonial_type == "image":
+                # Get image file from request.FILES if available
+                image_file = self.request.FILES.get('testimonial_image')
+                if not image_file:
+                    continue
+                    
+                testimonial = Testimonial.objects.create(
+                    type="image",
+                    author=testimonial_data.get("author", ""),
+                    role=testimonial_data.get("role", ""),
+                    company=testimonial_data.get("company", ""),
+                    image=image_file,
+                    is_approved=testimonial_data.get("isApproved", False)
+                )
+                partner_profile.testimonials.add(testimonial)
+            
+            # Handle video testimonials
+            elif testimonial_type == "video":
+                # Get video file from request.FILES if available
+                video_file = self.request.FILES.get('testimonial_video')
+                if not video_file:
+                    continue
+                    
+                testimonial = Testimonial.objects.create(
+                    type="video",
+                    author=testimonial_data.get("author", ""),
+                    role=testimonial_data.get("role", ""),
+                    company=testimonial_data.get("company", ""),
+                    video=video_file,
+                    is_approved=testimonial_data.get("isApproved", False)
+                )
+                partner_profile.testimonials.add(testimonial)
+        
+        print(f"Associated {len(testimonials_data)} testimonials with partner profile {partner_profile.id}")
     @action(detail=True, methods=['post'])
     def add_testimonial(self, request, pk=None):
         profile = self.get_object()

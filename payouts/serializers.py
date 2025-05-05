@@ -7,6 +7,8 @@ from partner.models import PartnerProfile
 from referrals_management.models import Referral
 from referrals_management.serializers import ReferralListSerializer
 from .models import Payout, PayoutReferral, PayoutSetting, Earnings
+from django.db import transaction
+import re
 
 
 class BasePayoutSerializer(serializers.ModelSerializer):
@@ -166,8 +168,7 @@ class PayoutUpdateSerializer(BasePayoutSerializer):
                 if completing_payout:
                     instance._update_associated_earnings()
         except Exception as e:
-            # Log the error
-            logger.error(f"Error updating payout {instance.id}: {str(e)}")
+  
             raise
             
         return instance
@@ -216,20 +217,29 @@ class PayoutReferralSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at']
 
 
+from rest_framework import serializers
+from .models import PayoutSetting
+
+
 class PayoutSettingSerializer(serializers.ModelSerializer):
     """Serializer for payout settings"""
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
     schedule_display = serializers.CharField(source='get_payout_schedule_display', read_only=True)
-    
+
     class Meta:
         model = PayoutSetting
         fields = '__all__'
         read_only_fields = ['updated_at']
-    
+
     def validate_payment_details(self, value):
-        """Validate payment_details based on payment_method."""
+        # Normalize keys to snake_case if they came in camelCase
+        def camel_to_snake(s): return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+        value = {camel_to_snake(k): v for k, v in value.items()}
+
         payment_method = self.initial_data.get('payment_method')
-        
+        if not payment_method:
+            raise serializers.ValidationError("Payment method must be specified.")
+
         if payment_method == 'paypal':
             if not value.get('email'):
                 raise serializers.ValidationError("Paypal email is required.")
@@ -244,8 +254,10 @@ class PayoutSettingSerializer(serializers.ModelSerializer):
         elif payment_method == 'stripe':
             if not value.get('account_id'):
                 raise serializers.ValidationError("Stripe requires an account ID.")
-        return value
+        else:
+            raise serializers.ValidationError(f"Unsupported payment method: {payment_method}")
 
+        return value
 
 
 class BaseEarningsSerializer(serializers.ModelSerializer):

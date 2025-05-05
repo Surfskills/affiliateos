@@ -12,26 +12,40 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
 
+from rest_framework import serializers
+from .models import Testimonial
+
 class TestimonialSerializer(serializers.ModelSerializer):
-    imageUrl = serializers.SerializerMethodField(required=False)
-    videoUrl = serializers.SerializerMethodField(required=False)
-    
+    imageUrl = serializers.SerializerMethodField()
+    videoUrl = serializers.SerializerMethodField()
+
     class Meta:
         model = Testimonial
         fields = [
-            'id', 'content', 'author', 'role', 'company', 
-            'created_at', 'type', 'imageUrl', 'videoUrl'
+            'id',
+            'content',
+            'author',
+            'role',
+            'company',
+            'type',
+            'status',           # ✅ replaces is_approved
+            'created_at',
+            'updated_at',
+            'imageUrl',
+            'videoUrl',
         ]
-    
+
     def get_imageUrl(self, obj):
         if obj.type == 'image' and obj.image:
             return obj.image.url
         return None
-    
+
     def get_videoUrl(self, obj):
         if obj.type == 'video' and obj.video:
             return obj.video.url
         return None
+
+
     
 class PartnerProfileSerializer(serializers.ModelSerializer):
     # Add calculated fields that match frontend expectations
@@ -206,11 +220,9 @@ def to_internal_value(self, data):
 
 class PartnerProfileUpdateSerializer(PartnerProfileCreateSerializer):
     def update(self, instance, validated_data):
-        # Extract and remove nested data
+    # Extract and remove nested data
         selected_products = validated_data.pop('selected_products', None)
-        testimonials = validated_data.pop('testimonials', None)
-        testimonial_image = validated_data.pop('testimonial_image', None)
-        testimonial_video = validated_data.pop('testimonial_video', None)
+        testimonials_data = validated_data.pop('testimonials', None)
         
         # Update profile fields
         for attr, value in validated_data.items():
@@ -219,51 +231,57 @@ class PartnerProfileUpdateSerializer(PartnerProfileCreateSerializer):
         
         # Update selected products if provided
         if selected_products is not None:
-            try:
-                product_ids = [p.get('id') for p in selected_products if p.get('id')]
-                products = Product.objects.filter(id__in=product_ids)
-                instance.selected_products.set(products)
-            except Exception as e:
-                print(f"Error updating products: {str(e)}")
+            instance.selected_products.set(selected_products)
         
         # Process testimonials if provided
-        if testimonials is not None:
-            try:
-                # Clear existing testimonials and add new ones
-                instance.testimonials.clear()
+        if testimonials_data is not None:
+            # Clear existing testimonials
+            instance.testimonials.clear()
+            
+            # Get request from context
+            request = self.context.get('request')
+            
+            for testimonial_data in testimonials_data:
+                testimonial_type = testimonial_data.get('type')
+                if not testimonial_type:
+                    continue
+                    
+                if testimonial_type == 'text':
+                    testimonial = Testimonial.objects.create(
+                        type='text',
+                        content=testimonial_data.get('content', ''),
+                        author=testimonial_data.get('author', ''),
+                        role=testimonial_data.get('role', ''),
+                        company=testimonial_data.get('company', ''),
+                        is_approved=testimonial_data.get('isApproved', False)
+                    )
+                    instance.testimonials.add(testimonial)
                 
-                for testimonial in testimonials:
-                    if testimonial.get('type') == 'text':
-                        text_testimonial = Testimonial.objects.create(
-                            type='text',
-                            content=testimonial.get('content'),
-                            author=testimonial.get('author'),
-                            role=testimonial.get('role', ''),
-                            company=testimonial.get('company', '')
-                        )
-                        instance.testimonials.add(text_testimonial)
-                    
-                    elif testimonial.get('type') == 'image' and testimonial_image:
-                        image_testimonial = Testimonial.objects.create(
+                elif testimonial_type == 'image':
+                    image_file = request.FILES.get('testimonial_image') if request else None
+                    if image_file:
+                        testimonial = Testimonial.objects.create(
                             type='image',
-                            author=testimonial.get('author'),
-                            role=testimonial.get('role', ''),
-                            company=testimonial.get('company', ''),
-                            image=testimonial_image
+                            author=testimonial_data.get('author', ''),
+                            role=testimonial_data.get('role', ''),
+                            company=testimonial_data.get('company', ''),
+                            image=image_file,
+                            is_approved=testimonial_data.get('isApproved', False)
                         )
-                        instance.testimonials.add(image_testimonial)
-                    
-                    elif testimonial.get('type') == 'video' and testimonial_video:
-                        video_testimonial = Testimonial.objects.create(
+                        instance.testimonials.add(testimonial)
+                
+                elif testimonial_type == 'video':
+                    video_file = request.FILES.get('testimonial_video') if request else None
+                    if video_file:
+                        testimonial = Testimonial.objects.create(
                             type='video',
-                            author=testimonial.get('author'),
-                            role=testimonial.get('role', ''),
-                            company=testimonial.get('company', ''),
-                            video=testimonial_video
+                            author=testimonial_data.get('author', ''),
+                            role=testimonial_data.get('role', ''),
+                            company=testimonial_data.get('company', ''),
+                            video=video_file,
+                            is_approved=testimonial_data.get('isApproved', False)
                         )
-                        instance.testimonials.add(video_testimonial)
-            except Exception as e:
-                print(f"Error updating testimonials: {str(e)}")
+                        instance.testimonials.add(testimonial)
         
         return instance
 

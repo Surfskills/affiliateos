@@ -46,40 +46,50 @@ class Product(models.Model):
         return (self.converted_referrals / total) * 100 if total > 0 else 0
 
 
+
+
 class Testimonial(models.Model):
+    
     class TestimonialType(models.TextChoices):
         TEXT = 'text', _('Text')
         IMAGE = 'image', _('Image')
         VIDEO = 'video', _('Video')
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', _('Pending')
+        APPROVED = 'approved', _('Approved')
+        REJECTED = 'rejected', _('Rejected')
 
     content = models.TextField(null=True, blank=True)
     author = models.CharField(max_length=255)
     role = models.CharField(max_length=255, null=True, blank=True)
     company = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)  # ✅ Added
-    is_approved = models.BooleanField(default=False)  # ✅ Added
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(  # ✅ New field
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
     type = models.CharField(
         max_length=10,
         choices=TestimonialType.choices,
         default=TestimonialType.TEXT
     )
     image = models.ImageField(
-        upload_to='testimonials/images/', 
-        null=True, 
-        blank=True,
-        help_text="Required for image testimonials"
+        upload_to='testimonials/images/',
+        null=True,
+        blank=True
     )
     video = models.FileField(
-        upload_to='testimonials/videos/', 
-        null=True, 
-        blank=True,
-        help_text="Required for video testimonials"
+        upload_to='testimonials/videos/',
+        null=True,
+        blank=True
     )
 
     class Meta:
         ordering = ['-created_at']
-    
+
     def __str__(self):
         return f"{self.author} - {self.get_type_display()} testimonial"
 
@@ -89,6 +99,7 @@ class Testimonial(models.Model):
             raise ValidationError("Image is required for image testimonials")
         if self.type == 'video' and not self.video:
             raise ValidationError("Video is required for video testimonials")
+
 
 
 class PartnerProfile(models.Model):
