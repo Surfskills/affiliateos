@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'referrals_management',
     'django_filters',
     'payouts',
+    'documents_management',
 ]
 
 

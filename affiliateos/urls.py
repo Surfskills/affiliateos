@@ -34,4 +34,6 @@ urlpatterns = [
 
     # Payouts module: earnings, withdrawals
     path('api/payouts/', include('payouts.urls')),
+
+    path('api/', include('documents_management.urls')),
 ]
