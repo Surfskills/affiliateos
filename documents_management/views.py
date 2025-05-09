@@ -8,11 +8,12 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, FileResponse
 from rest_framework import serializers
-
+import os
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from urllib.parse import quote as urlquote
-
+from django.http import FileResponse
+from django.views.decorators.clickjacking import xframe_options_exempt
 from .models import Document, DocumentRequirement
 from .serializers import DocumentSerializer, DocumentRequirementSerializer
 from .permissions import IsOwnerOrStaff, CanVerifyDocument
@@ -146,7 +147,101 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 )
 
         return value
+    @action(detail=True, methods=['get'])
+    def view(self, request, pk=None):
+        """
+        Handle document viewing with token authentication
+        """
+        # Check for token in both header and query params
+        token = request.META.get('HTTP_AUTHORIZATION', '').split('Bearer ')[-1] or request.GET.get('token')
+        
+        if not token:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        # Verify token (pseudo-code - implement your actual token verification)
+        if not self._verify_token(token):
+            return Response({'error': 'Invalid token'}, status=403)
 
+        document = self.get_object()
+        
+        if not document.file:
+            return Response({'error': 'Document file not found'}, status=404)
+
+        try:
+            file_path = document.file.path
+            if not os.path.exists(file_path):
+                return Response({'error': 'File not found on server'}, status=404)
+
+            # Determine content type
+            ext = os.path.splitext(file_path)[1].lower()
+            content_type = {
+                '.pdf': 'application/pdf',
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.png': 'image/png',
+            }.get(ext, 'application/octet-stream')
+
+            response = FileResponse(open(file_path, 'rb'), content_type=content_type)
+            response['Content-Disposition'] = f'inline; filename="{unquote(document.file.name)}"'
+            return response
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+    def _verify_token(self, token):
+        """Implement your actual token verification logic"""
+        from rest_framework.authtoken.models import Token
+        return Token.objects.filter(key=token).exists()
+
+
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None):
+        """
+        Download a document as attachment
+        """
+        document = self.get_object()
+        logger.debug(f"Attempting to download document ID {document.id}")
+
+        if not document.file:
+            logger.warning("Document has no file attached")
+            return Response(
+                {'error': 'No file available for this document'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            file_path = document.file.path
+            if not os.path.exists(file_path):
+                logger.error(f"File not found at path: {file_path}")
+                return Response(
+                    {'error': 'Document file not found on server'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            response = FileResponse(open(file_path, 'rb'))
+            response['Content-Type'] = 'application/octet-stream'
+            response['Content-Disposition'] = f'attachment; filename="{quote(document.file.name)}"'
+            return response
+
+        except Exception as e:
+            logger.error(f"Error downloading document: {str(e)}")
+            return Response(
+                {'error': 'Failed to download document'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def _get_content_type(self, filename):
+        """Determine content type based on file extension"""
+        ext = os.path.splitext(filename)[1].lower()
+        return {
+            '.pdf': 'application/pdf',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.txt': 'text/plain',
+            '.html': 'text/html',
+        }.get(ext, 'application/octet-stream')
 
 class DocumentRequirementViewSet(viewsets.ModelViewSet):
     queryset = DocumentRequirement.objects.filter(active=True)

@@ -29686,3 +29686,683 @@ WARNING 2025-05-06 18:09:03,314 log 43310 6184939520 Not Found: /api/documents/v
 WARNING 2025-05-06 18:10:09,023 log 43310 6201765888 Unauthorized: /api/documents/
 WARNING 2025-05-06 18:10:09,246 log 43310 6201765888 Unauthorized: /api/documents/
 WARNING 2025-05-06 18:11:02,987 log 43310 6168113152 Not Found: /api/documents/download/2/
+WARNING 2025-05-06 18:37:36,468 log 43849 6157463552 Not Found: /accounts/login/
+WARNING 2025-05-06 18:38:16,454 log 44362 6190231552 Not Found: /accounts/login/
+WARNING 2025-05-06 18:45:20,078 log 44454 6202634240 Not Found: /accounts/login/
+WARNING 2025-05-06 18:49:18,984 log 44519 6164557824 Not Found: /accounts/login/
+WARNING 2025-05-06 18:52:09,845 log 44554 6130561024 Unauthorized: /api/documents/2/download/
+WARNING 2025-05-06 18:52:31,148 log 44554 6130561024 Unauthorized: /api/documents/2/download/
+ERROR 2025-05-06 18:52:35,547 log 44554 6130561024 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 314, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+WARNING 2025-05-06 18:53:11,624 log 44554 6164213760 Not Found: /accounts/login/
+ERROR 2025-05-06 18:53:17,363 log 44554 6130561024 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 314, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+ERROR 2025-05-06 18:53:40,341 log 44601 6135164928 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 315, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+ERROR 2025-05-06 18:54:40,787 log 44681 6132183040 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 314, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+WARNING 2025-05-06 18:54:56,374 log 44681 6165835776 Unauthorized: /api/documents/2/preview/
+WARNING 2025-05-06 18:54:58,369 log 44681 6182662144 Unauthorized: /api/documents/2/download/
+ERROR 2025-05-06 18:55:08,529 log 44681 6132183040 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 314, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+ERROR 2025-05-06 18:55:28,317 log 44739 6122352640 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 315, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+ERROR 2025-05-06 18:55:40,410 log 44739 6122352640 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 315, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+ERROR 2025-05-06 18:56:20,024 log 44787 6162198528 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 315, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+ERROR 2025-05-06 18:56:23,563 log 44787 6162198528 Internal Server Error: /api/download/2/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/documents_management/views.py", line 315, in document_download_view
+    response = FileResponse(document.file)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 558, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 453, in __init__
+    self.streaming_content = streaming_content
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 492, in streaming_content
+    self._set_streaming_content(value)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/http/response.py", line 561, in _set_streaming_content
+    if not hasattr(value, "read"):
+           ~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/utils.py", line 41, in <lambda>
+    read = property(lambda self: self.file.read)
+                                 ^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/files.py", line 51, in _get_file
+    self._file = self.storage.open(self.name, "rb")
+                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/base.py", line 22, in open
+    return self._open(name, mode)
+           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/files/storage/filesystem.py", line 81, in _open
+    return File(open(self.path(name), mode))
+                ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/media/documents/2025/05/06/ID_FRONT_Noo2DHs.pdf'
+WARNING 2025-05-06 18:56:53,013 log 44808 6230814720 Not Found: /accounts/login/
+WARNING 2025-05-06 18:58:57,036 log 44883 6203797504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:58,715 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:58,833 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:59,068 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:59,237 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:59,394 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:59,814 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 18:59:59,984 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 19:00:00,296 log 44926 6191509504 Not Found: /accounts/login/
+WARNING 2025-05-06 19:20:04,535 log 45156 6200995840 Not Found: /api/document-requirements/
+WARNING 2025-05-06 19:20:44,886 log 45156 6200995840 Not Found: /accounts/login/
+WARNING 2025-05-07 06:22:32,641 log 45156 6167343104 Unauthorized: /api/partner/partner-profiles/dashboard/
+WARNING 2025-05-07 06:22:32,642 log 45156 6184169472 Unauthorized: /api/partner/partner-profiles/
+WARNING 2025-05-07 06:22:32,646 log 45156 6200995840 Unauthorized: /api/partner/partner-profiles/dashboard/
+WARNING 2025-05-07 06:22:32,654 log 45156 6167343104 Unauthorized: /api/partner/partner-profiles/
+WARNING 2025-05-07 06:22:32,656 log 45156 6184169472 Unauthorized: /api/partner/partner-profiles/dashboard/
+WARNING 2025-05-07 06:22:32,668 log 45156 6167343104 Unauthorized: /api/partner/partner-profiles/dashboard/
+WARNING 2025-05-07 06:24:17,446 log 45156 6167343104 Not Found: /api/placeholder/300/200
+WARNING 2025-05-07 06:24:49,164 log 45156 6184169472 Not Found: /api/placeholder/300/200
+ERROR 2025-05-07 06:29:27,419 log 45156 6200995840 Internal Server Error: /api/referrals/partner/referrals/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+ValueError: invalid literal for int() with base 10: 'Pro Plan'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/referrals_management/views.py", line 60, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/referrals_management/views.py", line 99, in get_queryset
+    queryset = queryset.filter(product_id=product_filter)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/related_lookups.py", line 112, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+ValueError: Field 'id' expected a number but got 'Pro Plan'.
+WARNING 2025-05-07 10:14:13,314 log 45156 6167343104 Not Found: /accounts/login/
+WARNING 2025-05-07 10:14:25,568 log 45156 6268301312 Not Found: /accounts/login/
+WARNING 2025-05-07 13:38:41,938 log 49905 6189346816 Unauthorized: /api/documents/
+WARNING 2025-05-07 16:44:11,091 log 49905 6189346816 Unauthorized: /api/documents/
+WARNING 2025-05-07 16:44:11,095 log 49905 6206173184 Unauthorized: /api/requirements/
+WARNING 2025-05-08 04:29:09,329 log 49905 6222999552 Unauthorized: /api/requirements/
+WARNING 2025-05-08 04:29:09,332 log 49905 6239825920 Unauthorized: /api/documents/
+WARNING 2025-05-08 04:58:12,253 log 56677 6131396608 Not Found: /
+WARNING 2025-05-08 06:13:04,736 log 56677 6131396608 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:13:33,529 log 56677 6165049344 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:13:43,649 log 56677 6181875712 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:15:37,067 log 56677 6131396608 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:17:13,526 log 56677 6131396608 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:18:05,892 log 56677 6165049344 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:21:28,089 log 56677 6131396608 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:22:07,287 log 56677 6165049344 Not Found: /payouts/
+WARNING 2025-05-08 06:22:17,450 log 56677 6181875712 Unauthorized: /api/payouts/payout-settings/
+ERROR 2025-05-08 06:29:06,853 log 58386 6202470400 Internal Server Error: /api/payouts/payouts/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1177, in get_field_names
+    assert field_name in fields, (
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: The field 'use_saved_payment_method' was declared on serializer PayoutCreateSerializer, but has not been included in the 'fields' option.
+ERROR 2025-05-08 06:29:27,298 log 58386 6219296768 Internal Server Error: /api/payouts/payouts/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1177, in get_field_names
+    assert field_name in fields, (
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: The field 'use_saved_payment_method' was declared on serializer PayoutCreateSerializer, but has not been included in the 'fields' option.
+ERROR 2025-05-08 06:33:45,196 log 58471 6155776000 Internal Server Error: /api/payouts/payouts/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 1177, in get_field_names
+    assert field_name in fields, (
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: The field 'use_saved_payment_method' was declared on serializer PayoutCreateSerializer, but has not been included in the 'fields' option.
+WARNING 2025-05-08 06:37:04,874 log 58515 6160117760 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 06:37:46,914 log 58515 6160117760 Unauthorized: /api/payouts/payout-settings/
+WARNING 2025-05-08 06:49:26,959 log 58700 6134362112 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 07:46:56,186 log 59463 6122074112 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 07:47:11,208 log 59463 6122074112 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 07:51:12,924 log 59463 6138900480 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 07:59:37,825 log 59463 6122074112 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 08:02:17,475 log 59463 6138900480 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 08:06:40,407 log 59463 6122074112 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 08:10:33,864 log 59463 6122074112 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 09:07:07,112 log 59463 6189379584 Not Found: /accounts/login/
+WARNING 2025-05-08 09:07:24,093 log 59463 6138900480 Not Found: /accounts/login/
+WARNING 2025-05-08 09:20:44,647 log 59463 6155726848 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:20:44,717 log 59463 6172553216 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:20:44,728 log 59463 6138900480 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:21:53,311 log 59463 6155726848 Not Found: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:21:53,359 log 59463 6172553216 Not Found: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:21:53,371 log 59463 6155726848 Not Found: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:22:22,721 log 59463 6138900480 Unauthorized: /api/payouts/payouts/
+WARNING 2025-05-08 09:22:28,522 log 59463 6122074112 Unauthorized: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:26:29,774 log 60984 6162804736 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:26:29,827 log 60984 6179631104 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:26:29,832 log 60984 6145978368 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:27:12,544 log 60984 6162804736 Not Found: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:27:12,589 log 60984 6179631104 Not Found: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:27:12,598 log 60984 6179631104 Not Found: /api/payouts/payouts/40/
+WARNING 2025-05-08 09:31:21,750 log 60984 6162804736 Not Found: /api/payouts/payouts/by-partner/39/
+WARNING 2025-05-08 09:31:21,808 log 60984 6129152000 Not Found: /api/payouts/payouts/by-partner/39/
+WARNING 2025-05-08 09:31:21,813 log 60984 6179631104 Not Found: /api/payouts/payouts/by-partner/39/
+WARNING 2025-05-08 09:43:54,109 log 61295 6159314944 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:43:54,164 log 61295 6176141312 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 09:43:54,175 log 61295 6159314944 Not Found: /api/payouts/payouts/by-partner/40/
+WARNING 2025-05-08 10:10:09,191 log 61295 6159314944 Not Found: /api/payouts/payouts/by-partner/39/
+WARNING 2025-05-08 10:10:09,274 log 61295 6125662208 Not Found: /api/payouts/payouts/by-partner/39/
+WARNING 2025-05-08 10:10:09,279 log 61295 6176141312 Not Found: /api/payouts/payouts/by-partner/39/
+WARNING 2025-05-08 10:11:04,222 log 61295 6159314944 Not Found: /api/payouts/payouts/39/
+WARNING 2025-05-08 10:11:04,276 log 61295 6125662208 Not Found: /api/payouts/payouts/39/
+WARNING 2025-05-08 10:11:04,279 log 61295 6176141312 Not Found: /api/payouts/payouts/39/
+ERROR 2025-05-08 11:41:12,795 log 62997 6126940160 Internal Server Error: /api/payouts/payouts/
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2128, in get_prep_value
+    return int(value)
+ValueError: invalid literal for int() with base 10: '40?page=1'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 149, in list
+    queryset = self.filter_queryset(self.get_queryset())
+                                    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/payouts/views.py", line 101, in get_queryset
+    queryset = queryset.filter(partner__id=partner_id)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1481, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1499, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1506, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1643, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1675, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1585, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1412, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+               ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 410, in get_prep_lookup
+    return super().get_prep_lookup()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/lookups.py", line 96, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/fredosege/Desktop/Python-projects/affiliateos/affiliateos/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 2130, in get_prep_value
+    raise e.__class__(
+        "Field '%s' expected a number but got %r." % (self.name, value),
+    ) from e
+ValueError: Field 'id' expected a number but got '40?page=1'.
+WARNING 2025-05-08 11:52:34,584 log 63045 6169014272 Bad Request: /api/payouts/payouts/
+WARNING 2025-05-08 12:39:29,682 log 64477 6218477568 Bad Request: /api/payouts/payouts/

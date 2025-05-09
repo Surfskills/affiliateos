@@ -6,6 +6,7 @@ from decimal import Decimal
 from partner.models import PartnerProfile
 from referrals_management.models import Referral
 import uuid
+import re
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -442,9 +443,18 @@ class PayoutSetting(models.Model):
     @property
     def schedule_display(self):
         return dict(self._meta.get_field('payout_schedule').choices)[self.payout_schedule]
-    
+        
     def clean(self):
         """Custom validation to ensure payment_details are valid based on payment_method."""
+        # Normalize keys to snake_case
+        if self.payment_details:
+            def camel_to_snake(s): 
+                return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+            
+            self.payment_details = {
+                camel_to_snake(k): v for k, v in self.payment_details.items()
+            }
+        
         if self.payment_method == 'paypal':
             if not self.payment_details.get('email'):
                 raise ValidationError("Paypal email is required in payment_details.")
@@ -459,6 +469,10 @@ class PayoutSetting(models.Model):
         elif self.payment_method == 'stripe':
             if not self.payment_details.get('account_id'):
                 raise ValidationError("Stripe requires an account ID in payment_details.")
+        elif self.payment_method == 'crypto':
+            if not self.payment_details.get('wallet_address'):
+                raise ValidationError("Cryptocurrency requires a wallet address in payment_details.")
+        
         super().clean()
 
 

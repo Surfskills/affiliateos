@@ -33,6 +33,9 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
+
+logger = logging.getLogger(__name__)
+
 class PayoutViewSet(viewsets.ModelViewSet):
     queryset = Payout.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -56,7 +59,58 @@ class PayoutViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             queryset = queryset.filter(partner__user=self.request.user)
 
-        # Filter by date range
+        # Apply search filter if provided
+        search_term = self.request.query_params.get('search')
+        if search_term:
+            queryset = queryset.filter(
+                Q(id__icontains=search_term) |
+                Q(partner__name__icontains=search_term) |
+                Q(note__icontains=search_term) |
+                Q(client_notes__icontains=search_term) |
+                Q(transaction_id__icontains=search_term)
+            )
+        
+        # Apply status filter if provided
+        status_filter = self.request.query_params.get('status')
+        if status_filter and status_filter != 'all':
+            queryset = queryset.filter(status=status_filter)
+            
+        # Apply payment method filter if provided
+        payment_method = self.request.query_params.get('payment_method')
+        if payment_method and payment_method != 'all':
+            queryset = queryset.filter(payment_method=payment_method)
+
+        # Filter by specific partner ID
+        partner_id = self.request.query_params.get('partner_id')
+        if partner_id:
+            # Clean the partner_id to handle malformed URL parameters
+            # If partner_id contains '?', extract only the number part
+            if '?' in partner_id:
+                partner_id = partner_id.split('?')[0]
+            
+            try:
+                partner_id = int(partner_id)
+                queryset = queryset.filter(partner__id=partner_id)
+            except (ValueError, TypeError):
+                # If partner_id is not a valid integer, don't apply the filter
+                logger.warning(f"Invalid partner_id received: {partner_id}")
+        
+        # Apply date range filters
+        date_filter = self.request.query_params.get('date')
+        if date_filter and date_filter != 'all':
+            today = timezone.now().date()
+            if date_filter == 'today':
+                queryset = queryset.filter(request_date__date=today)
+            elif date_filter == 'thisWeek':
+                start_of_week = today - timedelta(days=today.weekday())
+                queryset = queryset.filter(request_date__date__gte=start_of_week)
+            elif date_filter == 'thisMonth':
+                queryset = queryset.filter(request_date__month=today.month, request_date__year=today.year)
+            elif date_filter == 'last3Months':
+                three_months_ago = today - timedelta(days=90)
+                queryset = queryset.filter(request_date__date__gte=three_months_ago)
+        
+        # Apply specific date range if provided
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
 
@@ -83,7 +137,23 @@ class PayoutViewSet(viewsets.ModelViewSet):
         if max_amount:
             queryset = queryset.filter(amount__lte=float(max_amount))
 
-        return queryset
+        # Sort by default (most recent first)
+        return queryset.order_by('-request_date')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Ensure we're filtering for the current user if not staff
+        if not request.user.is_staff:
+            queryset = queryset.filter(partner__user=request.user)
+            
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+            
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         """Automatically associate the payout with the authenticated partner"""
@@ -158,7 +228,6 @@ class PayoutViewSet(viewsets.ModelViewSet):
             return Response({"error": "No partner profile found."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
 
     @action(detail=True, methods=['get'])
     def timeline(self, request, pk=None):
@@ -244,7 +313,8 @@ class PayoutViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Get monthly/weekly stats for payouts"""
+        """Get detailed statistics for payouts"""
+        queryset = self.get_queryset()
         time_frame = request.query_params.get('time_frame', 'monthly')
         
         if time_frame == 'monthly':
@@ -254,35 +324,92 @@ class PayoutViewSet(viewsets.ModelViewSet):
         else:  # default to daily
             truncate_func = TruncDay('request_date')
         
-        stats = self.get_queryset().annotate(
-            period=truncate_func
-        ).values('period').annotate(
-            total_count=Count('id'),
-            total_amount=Sum('amount'),
+        # Get payment method distribution
+        payment_methods = queryset.values('payment_method').annotate(
+            count=Count('id'),
+            total_amount=Sum('amount')
+        ).order_by('-count')
+        
+        # Get timeline data
+        timeline_data = queryset.annotate(
+            date=truncate_func
+        ).values('date').annotate(
+            count=Count('id'),
+            total_amount=Sum('amount')
+        ).order_by('date')
+        
+        # Get status distribution
+        status_data = queryset.values('status').annotate(
+            count=Count('id'),
+            total_amount=Sum('amount')
+        )
+        
+        stats = {
+            'total_payouts': queryset.count(),
+            'total_amount': queryset.aggregate(total=Sum('amount'))['total'] or 0,
+            'average_amount': queryset.aggregate(avg=Sum('amount') / Count('id'))['avg'] if queryset.count() > 0 else 0,
+            'by_status': status_data,
+            'by_payment_method': payment_methods,
+            'timeline': timeline_data
+        }
+        
+        return Response(stats)
+    
+    @action(detail=False, methods=['get'])
+    def monthly_earnings(self, request):
+        """Get monthly earnings breakdown"""
+        queryset = self.get_queryset()
+        
+        # For non-staff users, restrict to their own payouts
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(partner__user=self.request.user)
+        
+        # Get partner filter if provided
+        partner_id = self.request.query_params.get('partner_id')
+        if partner_id:
+            # Clean the partner_id to handle malformed URL parameters
+            if '?' in partner_id:
+                partner_id = partner_id.split('?')[0]
+                
+            try:
+                partner_id = int(partner_id)
+                queryset = queryset.filter(partner__id=partner_id)
+            except (ValueError, TypeError):
+                logger.warning(f"Invalid partner_id received in monthly_earnings: {partner_id}")
+        
+        # Get year filter if provided, default to current year
+        year = self.request.query_params.get('year', timezone.now().year)
+        queryset = queryset.filter(request_date__year=year)
+        
+        # Group by month and get totals
+        monthly_data = queryset.annotate(
+            month=TruncMonth('request_date')
+        ).values('month').annotate(
             completed_count=Count(Case(When(status=Payout.Status.COMPLETED, then=1), output_field=IntegerField())),
             completed_amount=Sum(Case(
                 When(status=Payout.Status.COMPLETED, then=F('amount')),
                 default=0,
                 output_field=DecimalField(max_digits=12, decimal_places=2)
-            ))
-        ).order_by('period')
+            )),
+            pending_count=Count(Case(When(status=Payout.Status.PENDING, then=1), output_field=IntegerField())),
+            pending_amount=Sum(Case(
+                When(status=Payout.Status.PENDING, then=F('amount')),
+                default=0,
+                output_field=DecimalField(max_digits=12, decimal_places=2)
+            )),
+            processing_count=Count(Case(When(status=Payout.Status.PROCESSING, then=1), output_field=IntegerField())),
+            processing_amount=Sum(Case(
+                When(status=Payout.Status.PROCESSING, then=F('amount')),
+                default=0,
+                output_field=DecimalField(max_digits=12, decimal_places=2)
+            )),
+            total_count=Count('id'),
+            total_amount=Sum('amount')
+        ).order_by('month')
         
-        return Response(list(stats))
-    # @action(detail=False, methods=['get'], url_path='monthly-earnings')
-    # def monthly_earnings(self, request):
-    #     payouts = Payout.objects.all()  # Or apply any necessary filters
-
-    #     if not payouts.exists():
-    #         return Response([], status=status.HTTP_200_OK)  # Return empty array if no payouts
-
-    #     # Process and return the earnings data as you already have in your backend logic
-    #     # For example:
-    #     earnings = payouts.aggregate(
-    #         total_count=Count('id'),
-    #         total_amount=Sum('amount')
-    #     )
-    #     return Response(earnings)
-    @action(detail=True, methods=['post'])
+        return Response(list(monthly_data))
+    
+    @action(detail=False, methods=['post'])
     def force_update_earnings(self, request, pk=None):
         """
         Debug action to force update all available earnings for this payout's partner
@@ -320,8 +447,6 @@ class PayoutViewSet(viewsets.ModelViewSet):
         except Exception as e:
             logger.error(f"Error in force_update_earnings: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-
 import logging
 from rest_framework.response import Response
 from rest_framework import status, serializers
