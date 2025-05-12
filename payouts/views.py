@@ -36,6 +36,16 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 logger = logging.getLogger(__name__)
 
+from datetime import datetime, timedelta
+from django.db.models import Q
+from django.utils import timezone
+import logging
+from rest_framework import viewsets, permissions, filters
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+
+logger = logging.getLogger(__name__)
+
 class PayoutViewSet(viewsets.ModelViewSet):
     queryset = Payout.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -54,106 +64,20 @@ class PayoutViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        
-        # For non-staff users, only show their own payouts
-        if not self.request.user.is_staff:
-            queryset = queryset.filter(partner__user=self.request.user)
+        user = self.request.user
 
-        # Apply search filter if provided
-        search_term = self.request.query_params.get('search')
-        if search_term:
-            queryset = queryset.filter(
-                Q(id__icontains=search_term) |
-                Q(partner__name__icontains=search_term) |
-                Q(note__icontains=search_term) |
-                Q(client_notes__icontains=search_term) |
-                Q(transaction_id__icontains=search_term)
-            )
-        
-        # Apply status filter if provided
-        status_filter = self.request.query_params.get('status')
-        if status_filter and status_filter != 'all':
-            queryset = queryset.filter(status=status_filter)
-            
-        # Apply payment method filter if provided
-        payment_method = self.request.query_params.get('payment_method')
-        if payment_method and payment_method != 'all':
-            queryset = queryset.filter(payment_method=payment_method)
+        if not user.is_staff:
+            # Non-admins only see their own payouts
+            return queryset.filter(partner__user=user)
 
-        # Filter by specific partner ID
+        # Admins: optionally filter by partner_id
         partner_id = self.request.query_params.get('partner_id')
         if partner_id:
-            # Clean the partner_id to handle malformed URL parameters
-            # If partner_id contains '?', extract only the number part
-            if '?' in partner_id:
-                partner_id = partner_id.split('?')[0]
-            
-            try:
-                partner_id = int(partner_id)
-                queryset = queryset.filter(partner__id=partner_id)
-            except (ValueError, TypeError):
-                # If partner_id is not a valid integer, don't apply the filter
-                logger.warning(f"Invalid partner_id received: {partner_id}")
-        
-        # Apply date range filters
-        date_filter = self.request.query_params.get('date')
-        if date_filter and date_filter != 'all':
-            today = timezone.now().date()
-            if date_filter == 'today':
-                queryset = queryset.filter(request_date__date=today)
-            elif date_filter == 'thisWeek':
-                start_of_week = today - timedelta(days=today.weekday())
-                queryset = queryset.filter(request_date__date__gte=start_of_week)
-            elif date_filter == 'thisMonth':
-                queryset = queryset.filter(request_date__month=today.month, request_date__year=today.year)
-            elif date_filter == 'last3Months':
-                three_months_ago = today - timedelta(days=90)
-                queryset = queryset.filter(request_date__date__gte=three_months_ago)
-        
-        # Apply specific date range if provided
-        start_date = self.request.query_params.get('start_date')
-        end_date = self.request.query_params.get('end_date')
+            queryset = queryset.filter(partner__id=partner_id)
 
-        if start_date:
-            try:
-                start_date = datetime.fromisoformat(start_date)
-                queryset = queryset.filter(request_date__gte=start_date)
-            except ValueError:
-                pass
+        return queryset
 
-        if end_date:
-            try:
-                end_date = datetime.fromisoformat(end_date)
-                queryset = queryset.filter(request_date__lte=end_date)
-            except ValueError:
-                pass
 
-        # Filter by amount range
-        min_amount = self.request.query_params.get('min_amount')
-        max_amount = self.request.query_params.get('max_amount')
-
-        if min_amount:
-            queryset = queryset.filter(amount__gte=float(min_amount))
-        if max_amount:
-            queryset = queryset.filter(amount__lte=float(max_amount))
-
-        # Sort by default (most recent first)
-        return queryset.order_by('-request_date')
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        
-        # Ensure we're filtering for the current user if not staff
-        if not request.user.is_staff:
-            queryset = queryset.filter(partner__user=request.user)
-            
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-            
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
     def perform_create(self, serializer):
         """Automatically associate the payout with the authenticated partner"""

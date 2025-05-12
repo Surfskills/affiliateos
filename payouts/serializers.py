@@ -16,51 +16,18 @@ class BasePayoutSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
     processed_by_name = serializers.SerializerMethodField()
-    formatted_payment_details = serializers.SerializerMethodField()
 
     class Meta:
         model = Payout
         fields = ['id', 'status', 'status_display', 'payment_method',  'payment_method_display', 
                  'amount', 'request_date', 'processed_date', 'processed_by', 'processed_by_name',
-                 'note', 'client_notes', 'transaction_id', 'updated_at', 'formatted_payment_details']
+                 'note', 'client_notes', 'transaction_id', 'updated_at']
         read_only_fields = ['id', 'request_date', 'processed_date', 'updated_at']
 
     def get_processed_by_name(self, obj):
         if obj.processed_by:
             return f"{obj.processed_by.first_name} {obj.processed_by.last_name}".strip() or obj.processed_by.username
         return None
-        
-    def get_formatted_payment_details(self, obj):
-        """Format payment details based on payment method for consistent display"""
-        details = obj.payment_details or {}
-        method = obj.payment_method
-        
-        # Format based on payment method
-        if method == 'paypal':
-            return {
-                'email': details.get('email', '')
-            }
-        elif method == 'bank':
-            return {
-                'account_name': details.get('account_name', ''),
-                'account_number': details.get('account_number', ''),
-                'routing_number': details.get('routing_number', ''),
-                'bank_name': details.get('bank_name', '')
-            }
-        elif method == 'mpesa':
-            return {
-                'phone_number': details.get('phone_number', '')
-            }
-        elif method == 'stripe':
-            return {
-                'account_id': details.get('account_id', '')
-            }
-        elif method == 'crypto':
-            return {
-                'wallet_address': details.get('wallet_address', ''),
-                'currency': details.get('currency', '')
-            }
-        return details
 
 
 class PayoutSerializer(BasePayoutSerializer):
@@ -118,40 +85,12 @@ class PayoutCreateSerializer(BasePayoutSerializer):
         
         return data
 
-    def validate_payment_details(self, value):
-        """Normalize and validate payment details"""
-        # Normalize keys to snake_case if they came in camelCase
-        def camel_to_snake(s): return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
-        value = {camel_to_snake(k): v for k, v in value.items()}
-        
-        payment_method = self.initial_data.get('payment_method')
-        required_fields = {
-            'bank': ['account_number', 'bank_name', 'account_name', 'routing_number'],
-            'mpesa': ['phone_number'],
-            'paypal': ['email'],
-            'stripe': ['account_id'],
-            'crypto': ['wallet_address', 'currency']
-        }
-
-        if payment_method in required_fields:
-            missing = [field for field in required_fields[payment_method] if not value.get(field)]
-            if missing:
-                raise serializers.ValidationError(
-                    f"Missing required fields for {payment_method}: {', '.join(missing)}"
-                )
-        
-        return value
-
     @atomic
     def create(self, validated_data):
         referral_ids = validated_data.pop('referral_ids', [])
         request = self.context.get('request')
         
-        # Set requested_by if not explicitly provided
-        if 'requested_by' not in validated_data and request:
-            validated_data['requested_by'] = request.user
-        
-        # Create the Payout
+        # Create the Payout without passing `requested_by` explicitly
         payout = Payout.objects.create(**validated_data)
 
         # Process referrals if provided
@@ -178,6 +117,25 @@ class PayoutCreateSerializer(BasePayoutSerializer):
             payout.save()
 
         return payout
+
+    def validate_payment_details(self, value):
+        payment_method = self.initial_data.get('payment_method')
+        required_fields = {
+            'bank': ['account_number', 'bank_name'],
+            'mpesa': ['phone_number'],
+            'paypal': ['email'],
+            'stripe': ['account_id']
+        }
+
+        if payment_method in required_fields:
+            missing = [field for field in required_fields[payment_method] if not value.get(field)]
+            if missing:
+                raise serializers.ValidationError(
+                    f"Missing required fields for {payment_method}: {', '.join(missing)}"
+                )
+        
+        return value
+
 
 
 class PayoutUpdateSerializer(BasePayoutSerializer):
@@ -267,44 +225,11 @@ class PayoutSettingSerializer(serializers.ModelSerializer):
     """Serializer for payout settings"""
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
     schedule_display = serializers.CharField(source='get_payout_schedule_display', read_only=True)
-    # Add a formatted payment details field that will be included in responses
-    formatted_payment_details = serializers.SerializerMethodField()
+
     class Meta:
         model = PayoutSetting
         fields = '__all__'
         read_only_fields = ['updated_at']
-
-    def get_formatted_payment_details(self, obj):
-        """Format payment details based on payment method for consistent display"""
-        details = obj.payment_details or {}
-        method = obj.payment_method
-        
-        # Format based on payment method
-        if method == 'paypal':
-            return {
-                'email': details.get('email', '')
-            }
-        elif method == 'bank':
-            return {
-                'account_name': details.get('account_name', ''),
-                'account_number': details.get('account_number', ''),
-                'routing_number': details.get('routing_number', ''),
-                'bank_name': details.get('bank_name', '')
-            }
-        elif method == 'mpesa':
-            return {
-                'phone_number': details.get('phone_number', '')
-            }
-        elif method == 'stripe':
-            return {
-                'account_id': details.get('account_id', '')
-            }
-        elif method == 'crypto':
-            return {
-                'wallet_address': details.get('wallet_address', ''),
-                'currency': details.get('currency', '')
-            }
-        return details
 
     def validate_payment_details(self, value):
         # Normalize keys to snake_case if they came in camelCase
@@ -329,9 +254,6 @@ class PayoutSettingSerializer(serializers.ModelSerializer):
         elif payment_method == 'stripe':
             if not value.get('account_id'):
                 raise serializers.ValidationError("Stripe requires an account ID.")
-        elif payment_method == 'crypto':
-            if not value.get('wallet_address'):
-                raise serializers.ValidationError("Cryptocurrency payments require a wallet address.")
         else:
             raise serializers.ValidationError(f"Unsupported payment method: {payment_method}")
 

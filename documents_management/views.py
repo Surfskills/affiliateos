@@ -32,12 +32,17 @@ class DocumentViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        logger.debug(f"Fetching queryset for user: {user} (is_staff={user.is_staff})")
+        queryset = Document.objects.all()
+        
+        # Apply user_id filter if provided
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        
+        # Permission checks
         if user.is_staff and user.has_perm('documents.view_all_documents'):
-            logger.debug("User has permission to view all documents.")
-            return Document.objects.all()
-        logger.debug("Returning documents owned by user.")
-        return Document.objects.filter(user=user)
+            return queryset
+        return queryset.filter(user=user)
     
     def perform_create(self, serializer):
         user = self.request.user
