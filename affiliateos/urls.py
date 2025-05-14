@@ -36,4 +36,5 @@ urlpatterns = [
     path('api/payouts/', include('payouts.urls')),
 
     path('api/', include('documents_management.urls')),
+    path('api/', include('resources.urls')),
 ]

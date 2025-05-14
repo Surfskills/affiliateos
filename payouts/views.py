@@ -452,6 +452,10 @@ class PayoutSettingViewSet(viewsets.ModelViewSet):
             
         try:
             instance = PayoutSetting.objects.get(partner=request.user.partner_profile)
+            logger.debug(f"Found payout setting instance: {instance}")
+            logger.debug(f"Payment method: {instance.payment_method}")
+            logger.debug(f"Payment details type: {type(instance.payment_details)}")
+            logger.debug(f"Payment details content: {instance.payment_details}")
         except PayoutSetting.DoesNotExist:
             instance = None
                 

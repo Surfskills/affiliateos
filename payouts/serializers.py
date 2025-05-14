@@ -9,17 +9,17 @@ from referrals_management.serializers import ReferralListSerializer
 from .models import Payout, PayoutReferral, PayoutSetting, Earnings
 from django.db import transaction
 import re
-
+import json
 
 class BasePayoutSerializer(serializers.ModelSerializer):
     """Base serializer with common payout fields"""
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
     processed_by_name = serializers.SerializerMethodField()
-
+    partner_name = serializers.CharField(source='partner.name', read_only=True)
     class Meta:
         model = Payout
-        fields = ['id', 'status', 'status_display', 'payment_method',  'payment_method_display', 
+        fields = ['id', 'status', 'partner', 'status_display', 'payment_method', 'partner_name', 'payment_method_display', 
                  'amount', 'request_date', 'processed_date', 'processed_by', 'processed_by_name',
                  'note', 'client_notes', 'transaction_id', 'updated_at']
         read_only_fields = ['id', 'request_date', 'processed_date', 'updated_at']
@@ -34,9 +34,9 @@ class PayoutSerializer(BasePayoutSerializer):
     """Serializer for payout read operations"""
     partner_details = serializers.SerializerMethodField()
     referrals = serializers.SerializerMethodField()
-
+    partner_name = serializers.CharField(source='partner.name', read_only=True)
     class Meta(BasePayoutSerializer.Meta):
-        fields = BasePayoutSerializer.Meta.fields + ['partner_details', 'referrals']
+        fields = BasePayoutSerializer.Meta.fields + ['partner_details', 'partner_name','referrals']
 
     def get_partner_details(self, obj):
         from partner.serializers import PartnerProfileSerializer
@@ -225,11 +225,28 @@ class PayoutSettingSerializer(serializers.ModelSerializer):
     """Serializer for payout settings"""
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
     schedule_display = serializers.CharField(source='get_payout_schedule_display', read_only=True)
+    payment_details = serializers.SerializerMethodField()  # Add this line
+    partner_name = serializers.CharField(source='partner.name', read_only=True)
 
     class Meta:
         model = PayoutSetting
         fields = '__all__'
         read_only_fields = ['updated_at']
+
+    def get_payment_details(self, obj):
+        """Ensure payment_details is always returned as a dict with proper formatting"""
+        if not obj.payment_details:
+            return {}
+        
+        # If payment_details is already a dict, return it as-is
+        if isinstance(obj.payment_details, dict):
+            return obj.payment_details
+        
+        # If it's stored as a string, try to parse it as JSON
+        try:
+            return json.loads(obj.payment_details)
+        except (TypeError, json.JSONDecodeError):
+            return {}
 
     def validate_payment_details(self, value):
         # Normalize keys to snake_case if they came in camelCase
