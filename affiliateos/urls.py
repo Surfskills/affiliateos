@@ -37,4 +37,5 @@ urlpatterns = [
 
     path('api/', include('documents_management.urls')),
     path('api/', include('resources.urls')),
+    path('api/', include('support.urls')),
 ]

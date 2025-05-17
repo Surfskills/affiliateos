@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'payouts',
     'documents_management',
     'resources',
+    'support',
 ]
 
 
@@ -72,6 +73,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Custom middleware
+    'support.middleware.CurrentUserMiddleware',
 ]
 
 ROOT_URLCONF = 'affiliateos.urls'
