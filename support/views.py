@@ -1,5 +1,3 @@
-## Implementation for activity logging in views.py
-
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -35,10 +33,26 @@ class IsAdminOrSupportAgent(permissions.BasePermission):
             request.user.is_staff and 
             request.user.user_type in ['admin', 'support_agent']
         )
+
+class IsSupportAgentAssignedToTicket(permissions.BasePermission):
+    """
+    Custom permission to only allow support agents to access tickets assigned to them.
+    """
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        # Admin can access any ticket
+        if user.is_staff and user.user_type == 'admin':
+            return True
+        # Support agent can only access tickets assigned to them
+        elif user.is_staff and user.user_type == 'support_agent':
+            return obj.assigned_to == user
+        # Regular users can access their own tickets
+        return obj.submitted_by == user
+
 class SupportTicketViewSet(viewsets.ModelViewSet):
     queryset = SupportTicket.objects.all().order_by('-created_at')
     serializer_class = SupportTicketSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSupportAgentAssignedToTicket]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -119,12 +133,9 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         # Admins can see all tickets
         if user.is_staff and user.user_type == 'admin':
             return self.queryset
-        # Support agents can see tickets assigned to them
+        # Support agents can ONLY see tickets assigned to them
         elif user.is_staff and user.user_type == 'support_agent':
-            return self.queryset.filter(
-                models.Q(assigned_to=user) | 
-                models.Q(assigned_to__isnull=True)  # Optionally see unassigned tickets
-            )
+            return self.queryset.filter(assigned_to=user)
         # Regular users (partners) can see only their own tickets
         return self.queryset.filter(submitted_by=user)
 
@@ -217,28 +228,18 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         # Filter tickets based on user role
         user = request.user
         
-        # For admin users, access all tickets
-        if user.is_staff and user.user_type == 'admin':
-            all_tickets = SupportTicket.objects.all()
-        # For support agents, only show assigned tickets
-        elif user.is_staff and user.user_type == 'support_agent':
-            all_tickets = SupportTicket.objects.filter(
-                models.Q(assigned_to=user) | 
-                models.Q(assigned_to__isnull=True)  # Optionally include unassigned
-            )
-        # For regular users, only show their own tickets
-        else:
-            all_tickets = SupportTicket.objects.filter(submitted_by=user)
+        # Get the filtered queryset based on user role
+        filtered_tickets = self.get_queryset()
         
         # Count tickets by status
-        open_tickets = all_tickets.filter(status='open').count()
-        in_progress_tickets = all_tickets.filter(status='in_progress').count()
-        resolved_tickets = all_tickets.filter(status='resolved').count()
-        urgent_tickets = all_tickets.filter(priority='urgent').count()
+        open_tickets = filtered_tickets.filter(status='open').count()
+        in_progress_tickets = filtered_tickets.filter(status='in_progress').count()
+        resolved_tickets = filtered_tickets.filter(status='resolved').count()
+        urgent_tickets = filtered_tickets.filter(priority='urgent').count()
         
         # Calculate average resolution time for resolved tickets
         avg_resolution_time = 0
-        resolved_with_times = all_tickets.filter(
+        resolved_with_times = filtered_tickets.filter(
             status='resolved',
             updated_at__isnull=False,
             created_at__isnull=False
@@ -247,7 +248,6 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         if resolved_with_times.exists():
             # Calculate the average time in hours
             from django.db.models import F, ExpressionWrapper, fields
-            from django.db.models.functions import Extract
             
             resolved_with_times = resolved_with_times.annotate(
                 resolution_time=ExpressionWrapper(
@@ -264,7 +264,7 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
             avg_resolution_time = round(total_hours / resolved_with_times.count(), 1)
         
         return Response({
-            'totalTickets': all_tickets.count(),
+            'totalTickets': filtered_tickets.count(),
             'openTickets': open_tickets,
             'inProgressTickets': in_progress_tickets,
             'resolvedTickets': resolved_tickets,
@@ -342,7 +342,7 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         support_staff = User.objects.filter(
             models.Q(user_type='admin') | models.Q(user_type='support_agent'),
             is_active=True,
-            is_staff=True  # Crucial for admin detection
+            is_staff=True
         ).order_by('first_name', 'last_name')
 
         staff_data = []
@@ -358,7 +358,7 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         
         return Response(staff_data)
         
-    # Update the assign action in SupportTicketViewSet to use this permission
+    # Update the assign action to use the permission class and handle notifications
     @action(detail=True, methods=['post'], permission_classes=[IsAdminOrSupportAgent])
     def assign(self, request, pk=None):
         """
@@ -377,17 +377,24 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         else:
             try:
                 # Allow assigning to either admin or support agent
-                staff_user = User.objects.get(
+                staff_user = User.objects.filter(
                     id=staff_id, 
                     is_active=True,
                     is_staff=True,
                     user_type__in=['admin', 'support_agent']
-                )
+                ).first()
+                
+                if not staff_user:
+                    return Response(
+                        {"error": "Staff member not found or does not have appropriate privileges"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    
                 ticket.assigned_to = staff_user
                 new_assignee = staff_user.get_full_name() or staff_user.email
-            except User.DoesNotExist:
+            except Exception as e:
                 return Response(
-                    {"error": "Staff member not found or does not have appropriate privileges"},
+                    {"error": f"Error assigning ticket: {str(e)}"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         
@@ -408,15 +415,52 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
             }
         )
         
+        # TODO: Send notification to the newly assigned support agent
+        # This could be implemented with Django signals or a notification system
+        
         serializer = self.get_serializer(ticket)
         return Response(serializer.data)
-    
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        
+        # Admins can see all comments
+        if user.is_staff and user.user_type == 'admin':
+            return self.queryset
+        # Support agents can only see comments on tickets assigned to them
+        elif user.is_staff and user.user_type == 'support_agent':
+            return self.queryset.filter(
+                models.Q(ticket__assigned_to=user) | 
+                models.Q(ticket__assigned_to__isnull=True) |
+                models.Q(author=user)
+            )
+        # Regular users can see comments on their own tickets
+        return self.queryset.filter(ticket__submitted_by=user)
+
     def perform_create(self, serializer):
+        ticket_id = self.request.data.get('ticket')
+        
+        # Check if user has permission to comment on this ticket
+        user = self.request.user
+        if user.is_staff and user.user_type == 'admin':
+            # Admin can comment on any ticket
+            pass
+        elif user.is_staff and user.user_type == 'support_agent':
+            # Support agent can only comment on assigned tickets or unassigned tickets
+            ticket = SupportTicket.objects.get(id=ticket_id)
+            if ticket.assigned_to != user and ticket.assigned_to is not None:
+                raise permissions.PermissionDenied("You can only comment on tickets assigned to you or unassigned tickets.")
+        else:
+            # Regular users can only comment on their own tickets
+            ticket = SupportTicket.objects.get(id=ticket_id)
+            if ticket.submitted_by != user:
+                raise permissions.PermissionDenied("You can only comment on your own tickets.")
+                
         comment = serializer.save(author=self.request.user)
         
         # Log comment activity
@@ -430,18 +474,3 @@ class CommentViewSet(viewsets.ModelViewSet):
                 'content_preview': comment.content[:100] + ('...' if len(comment.content) > 100 else '')
             }
         )
-
-class CurrentUserView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        data = {
-            'id': user.id,
-            'name': user.get_full_name(),
-            'email': user.email,
-            'user_type': user.user_type,
-            'isAdmin': user.is_staff,
-            'isSupportAgent': user.user_type == 'support_agent'
-        }
-        return Response(data)
