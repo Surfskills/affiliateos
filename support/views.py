@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage
 from rest_framework.exceptions import NotFound
 
 from authentication.models import User
+from rest_framework.views import APIView
 
 from django.db import models
 
@@ -20,6 +21,20 @@ from .serializers import (
     ActivityLogSerializer
 )
 
+from rest_framework import permissions
+
+class IsAdminOrSupportAgent(permissions.BasePermission):
+    """
+    Custom permission to only allow admin and support agent users to assign tickets.
+    """
+    def has_permission(self, request, view):
+        # Check if user is authenticated and is either admin or support agent
+        return (
+            request.user and 
+            request.user.is_authenticated and 
+            request.user.is_staff and 
+            request.user.user_type in ['admin', 'support_agent']
+        )
 class SupportTicketViewSet(viewsets.ModelViewSet):
     queryset = SupportTicket.objects.all().order_by('-created_at')
     serializer_class = SupportTicketSerializer
@@ -101,8 +116,16 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:
+        # Admins can see all tickets
+        if user.is_staff and user.user_type == 'admin':
             return self.queryset
+        # Support agents can see tickets assigned to them
+        elif user.is_staff and user.user_type == 'support_agent':
+            return self.queryset.filter(
+                models.Q(assigned_to=user) | 
+                models.Q(assigned_to__isnull=True)  # Optionally see unassigned tickets
+            )
+        # Regular users (partners) can see only their own tickets
         return self.queryset.filter(submitted_by=user)
 
     @action(detail=True, methods=['post'])
@@ -191,8 +214,23 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         """
         Return statistics about support tickets
         """
+        # Filter tickets based on user role
+        user = request.user
+        
+        # For admin users, access all tickets
+        if user.is_staff and user.user_type == 'admin':
+            all_tickets = SupportTicket.objects.all()
+        # For support agents, only show assigned tickets
+        elif user.is_staff and user.user_type == 'support_agent':
+            all_tickets = SupportTicket.objects.filter(
+                models.Q(assigned_to=user) | 
+                models.Q(assigned_to__isnull=True)  # Optionally include unassigned
+            )
+        # For regular users, only show their own tickets
+        else:
+            all_tickets = SupportTicket.objects.filter(submitted_by=user)
+        
         # Count tickets by status
-        all_tickets = SupportTicket.objects.all()
         open_tickets = all_tickets.filter(status='open').count()
         in_progress_tickets = all_tickets.filter(status='in_progress').count()
         resolved_tickets = all_tickets.filter(status='resolved').count()
@@ -201,8 +239,8 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         # Calculate average resolution time for resolved tickets
         avg_resolution_time = 0
         resolved_with_times = all_tickets.filter(
-            status='resolved', 
-            updated_at__isnull=False, 
+            status='resolved',
+            updated_at__isnull=False,
             created_at__isnull=False
         )
         
@@ -222,7 +260,7 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
             for ticket in resolved_with_times:
                 # Convert duration to hours
                 total_hours += ticket.resolution_time.total_seconds() / 3600
-                
+            
             avg_resolution_time = round(total_hours / resolved_with_times.count(), 1)
         
         return Response({
@@ -299,75 +337,80 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
-    def admin_staff(self, request):
-        """
-        Return a list of admin staff members who can be assigned to tickets
-        """
-        # Get all admin users based on user_type or is_staff
-        admin_users = User.objects.filter(
-            models.Q(user_type='admin') | models.Q(is_staff=True),
-            is_active=True  # Only return active users
+    def support_staff(self, request):
+        """Get all eligible support staff (admins and support agents)"""
+        support_staff = User.objects.filter(
+            models.Q(user_type='admin') | models.Q(user_type='support_agent'),
+            is_active=True,
+            is_staff=True  # Crucial for admin detection
         ).order_by('first_name', 'last_name')
-        
-        # Format the response
+
         staff_data = []
-        for user in admin_users:
+        for user in support_staff:
             staff_data.append({
-                'id': str(user.id),  # Ensure ID is a string to match frontend expectations
-                'name': user.get_full_name() or user.email,  # Use email as fallback since username is None
+                'id': str(user.id),
+                'name': user.get_full_name() or user.email,
                 'email': user.email,
-                'username': user.email,  # Since username is None in your model, use email instead
-                'is_active': user.is_active
+                'user_type': user.user_type,
+                'isAdmin': user.is_staff,
+                'isSupportAgent': user.user_type == 'support_agent'
             })
         
         return Response(staff_data)
         
-    @action(detail=True, methods=['post'])
+    # Update the assign action in SupportTicketViewSet to use this permission
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrSupportAgent])
     def assign(self, request, pk=None):
-            """
-            Assign a ticket to a staff member
-            """
-            ticket = self.get_object()
-            staff_id = request.data.get('staff_id')
-            
-            # Get the current assigned user before making changes
-            old_assigned_to = ticket.assigned_to
-            
-            # If staff_id is empty string or None, unassign the ticket
-            if not staff_id:
-                ticket.assigned_to = None
-                new_assignee = "No one"
-            else:
-               
-                try:
-                    staff_user = User.objects.get(id=staff_id, is_staff=True)
-                    ticket.assigned_to = staff_user
-                    new_assignee = staff_user.get_full_name() or staff_user.username
-                except User.DoesNotExist:
-                    return Response(
-                        {"error": "Staff member not found or does not have admin privileges"},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-            
-            # Save the ticket
-            ticket.save()
-            
-            # Log assignment change
-            old_assignee = old_assigned_to.get_full_name() if old_assigned_to else "No one"
-            
-            ActivityLog.objects.create(
-                ticket=ticket,
-                activity_type='assignment',
-                description=f"Ticket reassigned from {old_assignee} to {new_assignee}",
-                performed_by=request.user,
-                metadata={
-                    'old_assigned_to': str(old_assigned_to.id) if old_assigned_to else None,
-                    'new_assigned_to': str(ticket.assigned_to.id) if ticket.assigned_to else None
-                }
-            )
-            
-            serializer = self.get_serializer(ticket)
-            return Response(serializer.data)
+        """
+        Assign a ticket to a staff member (admin or support agent)
+        """
+        ticket = self.get_object()
+        staff_id = request.data.get('staff_id')
+        
+        # Get the current assigned user before making changes
+        old_assigned_to = ticket.assigned_to
+        
+        # If staff_id is empty string or None, unassign the ticket
+        if not staff_id:
+            ticket.assigned_to = None
+            new_assignee = "No one"
+        else:
+            try:
+                # Allow assigning to either admin or support agent
+                staff_user = User.objects.get(
+                    id=staff_id, 
+                    is_active=True,
+                    is_staff=True,
+                    user_type__in=['admin', 'support_agent']
+                )
+                ticket.assigned_to = staff_user
+                new_assignee = staff_user.get_full_name() or staff_user.email
+            except User.DoesNotExist:
+                return Response(
+                    {"error": "Staff member not found or does not have appropriate privileges"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        # Save the ticket
+        ticket.save()
+        
+        # Log assignment change
+        old_assignee = old_assigned_to.get_full_name() if old_assigned_to else "No one"
+        
+        ActivityLog.objects.create(
+            ticket=ticket,
+            activity_type='assignment',
+            description=f"Ticket reassigned from {old_assignee} to {new_assignee}",
+            performed_by=request.user,
+            metadata={
+                'old_assigned_to': str(old_assigned_to.id) if old_assigned_to else None,
+                'new_assigned_to': str(ticket.assigned_to.id) if ticket.assigned_to else None
+            }
+        )
+        
+        serializer = self.get_serializer(ticket)
+        return Response(serializer.data)
+    
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -387,3 +430,18 @@ class CommentViewSet(viewsets.ModelViewSet):
                 'content_preview': comment.content[:100] + ('...' if len(comment.content) > 100 else '')
             }
         )
+
+class CurrentUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        data = {
+            'id': user.id,
+            'name': user.get_full_name(),
+            'email': user.email,
+            'user_type': user.user_type,
+            'isAdmin': user.is_staff,
+            'isSupportAgent': user.user_type == 'support_agent'
+        }
+        return Response(data)
