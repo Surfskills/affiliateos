@@ -1,3 +1,4 @@
+from decimal import Decimal
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count, Sum, Case, When, F, IntegerField
@@ -10,11 +11,16 @@ from django.utils.text import slugify
 from django.db.models.functions import TruncMonth
 from rest_framework.decorators import api_view
 import json
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.db.models import Count, Sum, Avg, F, Q, ExpressionWrapper, fields
 from django.utils import timezone
-from payouts.models import Payout
+from documents_management.models import Document
+from partner.dashboard_metrics import DashboardMetrics
+from payouts.models import Earnings, Payout
 from referrals_management.models import Referral
+from resources.models import Resource
 from .models import PartnerOnboardingLink, PartnerProfile, Product, Testimonial
-from .serializers import PartnerOnboardingLinkSerializer, PartnerProfileCreateSerializer, PartnerProfileSerializer, PartnerDetailSerializer, PartnerProfileUpdateSerializer, ProductSerializer, TestimonialSerializer
+from .serializers import PartnerOnboardingLinkSerializer,  PartnerProfileSerializer, PartnerDetailSerializer, PartnerProfileUpdateSerializer, ProductSerializer, TestimonialSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -1150,3 +1156,63 @@ class PartnerOnboardingLinkViewSet(viewsets.ModelViewSet):
         link.expires_at = link.expires_at + timedelta(days=days)
         link.save()
         return Response({'status': 'link extended', 'new_expiry': link.expires_at})
+
+class DashboardViewSet(viewsets.ViewSet):
+    """
+    API endpoint for dashboard metrics
+    """
+    permission_classes = [IsAdminUser]  # Only admin users can view dashboard metrics
+    
+    @action(detail=False, methods=['get'])
+    def metrics(self, request):
+        """Get all dashboard metrics"""
+        metrics = DashboardMetrics.get_all_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def overview(self, request):
+        """Get overview metrics"""
+        metrics = DashboardMetrics.get_overview_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def referrals(self, request):
+        """Get referral metrics"""
+        metrics = DashboardMetrics.get_referral_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def partners(self, request):
+        """Get partner metrics"""
+        metrics = DashboardMetrics.get_partner_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def earnings(self, request):
+        """Get earnings metrics"""
+        metrics = DashboardMetrics.get_earnings_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def payouts(self, request):
+        """Get payout metrics"""
+        metrics = DashboardMetrics.get_payout_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def resources(self, request):
+        """Get resource metrics"""
+        metrics = DashboardMetrics.get_resource_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def documents(self, request):
+        """Get document metrics"""
+        metrics = DashboardMetrics.get_document_metrics()
+        return Response(metrics)
+    
+    @action(detail=False, methods=['get'])
+    def products(self, request):
+        """Get product metrics"""
+        metrics = DashboardMetrics.get_product_metrics()
+        return Response(metrics)

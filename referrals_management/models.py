@@ -4,7 +4,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import timedelta
-from partner.models import PartnerProfile, Product
+
 
 class ReferralTimeline(models.Model):
     """Track status changes for referrals"""
@@ -30,7 +30,6 @@ class ReferralTimeline(models.Model):
     def __str__(self):
         return f"{self.referral.client_name} - {self.status} at {self.timestamp}"
 
-
 class Referral(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pending', _('Pending')
@@ -45,7 +44,7 @@ class Referral(models.Model):
         related_name='referrals'
     )
     partner = models.ForeignKey(
-        PartnerProfile,
+    'partner.PartnerProfile', # Using string to avoid circular import
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -57,13 +56,14 @@ class Referral(models.Model):
     client_phone = models.CharField(max_length=50)
     company = models.CharField(max_length=255, blank=True, null=True)
     product = models.ForeignKey(
-        Product,
+    'partner.Product', # Using string to avoid circular import
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='referrals'
     )
-    product_name = models.CharField(max_length=255, blank=True)
+    # Mark product_name as deprecated - to be removed after data migration
+    product_name = models.CharField(max_length=255, blank=True, help_text="Deprecated: Use product FK instead")
     date_submitted = models.DateTimeField(auto_now_add=True)
 
     # Keep the original "timeline" choice for frontend
@@ -125,6 +125,7 @@ class Referral(models.Model):
             models.Index(fields=['referral_code']),
             models.Index(fields=['user', 'status']),
             models.Index(fields=['partner']),
+            models.Index(fields=['product']),  # Added index for product FK
         ]
 
     def __str__(self):
@@ -138,6 +139,27 @@ class Referral(models.Model):
         # Set referral_code if not already set
         if not self.referral_code and self.partner:
             self.referral_code = self.partner.referral_code
+
+        # Ensure product_name is synchronized with product FK
+        if self.product and not self.product_name:
+            self.product_name = self.product.name
+        
+        # Ensure potential_commission is set based on product if empty
+        if self.product and (self.potential_commission == 0 or self.potential_commission is None):
+            try:
+                # If commission is stored as a decimal/float value in string format
+                commission_value = float(self.product.commission.strip('%'))
+                # Calculate based on product price if available
+                if self.product.price:
+                    try:
+                        price = float(self.product.price)
+                        self.potential_commission = (commission_value / 100) * price
+                    except (ValueError, TypeError):
+                        # If price can't be converted to float, keep as is
+                        pass
+            except (ValueError, TypeError):
+                # If commission can't be parsed as a number, keep potential_commission as is
+                pass
 
         # Set expected implementation date from timeline
         if isinstance(self.timeline, str):
@@ -191,6 +213,6 @@ class Referral(models.Model):
                         source='referral',
                         status='available' if self.actual_commission > 0 else 'pending'
                     )
-            except PartnerProfile.DoesNotExist:
+            except Exception:
                 return None
         return None
