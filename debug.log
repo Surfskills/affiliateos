@@ -35954,3 +35954,9 @@ WARNING 2025-05-19 12:34:40,088 log 3574 6191001600 Not Found: /api/partner/part
 WARNING 2025-05-19 12:34:51,480 log 3574 6157348864 Not Found: /api/partner/partner-profiles/by-referral/support/
 WARNING 2025-05-19 12:34:51,487 log 3574 6224654336 Not Found: /api/partner/partner-profiles/by-referral/support/
 WARNING 2025-05-19 13:20:19,792 log 3574 6174175232 Not Found: /api/resources/undefined/increment_view/
+WARNING 2025-05-20 05:06:37,958 log 88643 6209122304 Unauthorized: /api/partner/partner-profiles/dashboard/
+WARNING 2025-05-20 05:06:37,958 log 88643 6158643200 Unauthorized: /api/partner/partner-profiles/
+WARNING 2025-05-20 05:06:37,961 log 88643 6192295936 Unauthorized: /api/partner/partner-profiles/
+WARNING 2025-05-20 05:06:37,961 log 88643 6175469568 Unauthorized: /api/partner/partner-profiles/dashboard/
+WARNING 2025-05-20 05:30:30,499 log 92037 6171570176 Forbidden: /api/support/tickets/7/
+WARNING 2025-05-20 05:30:34,565 log 92037 6137917440 Forbidden: /api/support/tickets/7/

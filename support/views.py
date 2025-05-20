@@ -36,16 +36,16 @@ class IsAdminOrSupportAgent(permissions.BasePermission):
 
 class IsSupportAgentAssignedToTicket(permissions.BasePermission):
     """
-    Custom permission to only allow support agents to access tickets assigned to them.
+    Custom permission to allow support agents to access tickets assigned to them or created by them.
     """
     def has_object_permission(self, request, view, obj):
         user = request.user
         # Admin can access any ticket
         if user.is_staff and user.user_type == 'admin':
             return True
-        # Support agent can only access tickets assigned to them
+        # Support agent can access tickets assigned to them OR created by them
         elif user.is_staff and user.user_type == 'support_agent':
-            return obj.assigned_to == user
+            return obj.assigned_to == user or obj.submitted_by == user
         # Regular users can access their own tickets
         return obj.submitted_by == user
 
@@ -128,14 +128,18 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
                 }
             )
 
+
     def get_queryset(self):
         user = self.request.user
         # Admins can see all tickets
         if user.is_staff and user.user_type == 'admin':
             return self.queryset
-        # Support agents can ONLY see tickets assigned to them
+        # Support agents can see tickets assigned to them OR created by them
         elif user.is_staff and user.user_type == 'support_agent':
-            return self.queryset.filter(assigned_to=user)
+            return self.queryset.filter(
+                models.Q(assigned_to=user) | 
+                models.Q(submitted_by=user)
+            )
         # Regular users (partners) can see only their own tickets
         return self.queryset.filter(submitted_by=user)
 
