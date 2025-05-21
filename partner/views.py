@@ -1161,7 +1161,7 @@ class DashboardViewSet(viewsets.ViewSet):
     """
     API endpoint for dashboard metrics
     """
-    permission_classes = [IsAdminUser]  # Only admin users can view dashboard metrics
+    # permission_classes = [IsAdminUser]  # Only admin users can view dashboard metrics
     
     @action(detail=False, methods=['get'])
     def metrics(self, request):

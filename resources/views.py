@@ -23,6 +23,7 @@ class ResourceTagViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'slug'
 
+
 class ResourceViewSet(viewsets.ModelViewSet):
     serializer_class = ResourceSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -64,6 +65,12 @@ class ResourceViewSet(viewsets.ModelViewSet):
         tags = self.request.query_params.getlist('tags')
         if tags:
             queryset = queryset.filter(tags__slug__in=tags).distinct()
+        
+        # Filter by creator (uploaded_by)
+        # FIXED: Use the uploaded_by email directly instead of trying to access username
+        uploaded_by = self.request.query_params.get('uploaded_by')
+        if uploaded_by:
+            queryset = queryset.filter(uploaded_by__email=uploaded_by)
         
         return queryset.select_related('category', 'uploaded_by').prefetch_related('tags', 'partners', 'versions')
     
