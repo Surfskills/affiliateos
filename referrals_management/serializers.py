@@ -16,7 +16,7 @@ class ReferralCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Referral
         fields = '__all__'
-        read_only_fields = ['user', 'referral_code', 'actual_commission', 'prev_status', 'updated_at']
+        read_only_fields = ['user', 'actual_commission', 'prev_status', 'updated_at']
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -30,12 +30,8 @@ class ReferralCreateSerializer(serializers.ModelSerializer):
         # Fall back to the raw provided referral_code from initial data
         raw_referral_code = self.initial_data.get('referral_code')
 
-        final_referral_code = user_referral_code or raw_referral_code
-
-        if not final_referral_code:
-            raise serializers.ValidationError({
-                'referral_code': 'Referral code is required because the user has none.'
-            })
+        # Allow referral_code to be None
+        final_referral_code = user_referral_code or raw_referral_code or None
 
         validated_data['referral_code'] = final_referral_code
 

@@ -36,16 +36,21 @@ class ReferralViewSet(viewsets.ModelViewSet):
 
         user = request.user
 
-        # Check if user has a referral code (via partner profile, for example)
+        # Get referral code from user's partner profile if it exists
         user_referral_code = getattr(getattr(user, 'partner_profile', None), 'referral_code', None)
 
-        # Use raw provided referral code only if user doesn't have one
+        # Get referral code provided in the request
         raw_provided_referral_code = validated_data.get('referral_code')
-        final_referral_code = user_referral_code or raw_provided_referral_code
 
+        # Determine the final referral code, allowing it to be None
+        final_referral_code = user_referral_code or raw_provided_referral_code or None
+
+        # Create referral without requiring referral code
         referral = serializer.save(user=user, referral_code=final_referral_code)
+        
         output_serializer = ReferralSerializer(referral)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -59,9 +64,12 @@ class ReferralViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         
-        # Ensure we're filtering for the current user
-        if not request.user.is_staff:
-            queryset = queryset.filter(user=request.user)
+              # Check if user is a support agent (in 'Support Agents' group)
+        is_support_agent = user.groups.filter(name='Support Agents').exists()
+
+        # Filter if: non-staff OR staff who are support agents
+        if not user.is_staff or (user.is_staff and is_support_agent):
+            queryset = queryset.filter(user=user)
             
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -72,11 +80,14 @@ class ReferralViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     def get_queryset(self):
         queryset = super().get_queryset()
-        
-        # Always filter by current user unless staff
-        if not self.request.user.is_staff:
-            queryset = queryset.filter(user=self.request.user)
-        
+        user = self.request.user
+
+        # Check if user is a support agent (in 'Support Agents' group)
+        is_support_agent = user.groups.filter(name='Support Agents').exists()
+
+        # Filter if: non-staff OR staff who are support agents
+        if not user.is_staff or (user.is_staff and is_support_agent):
+            queryset = queryset.filter(user=user)
         # Apply search filter if provided
         search_term = self.request.query_params.get('search')
         if search_term:

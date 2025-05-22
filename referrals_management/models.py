@@ -50,7 +50,7 @@ class Referral(models.Model):
         blank=True,
         related_name='referrals'
     )
-    referral_code = models.CharField(max_length=50, db_index=True)
+    referral_code = models.CharField(max_length=50, db_index=True, blank=True, null=True)
     client_name = models.CharField(max_length=255)
     client_email = models.EmailField()
     client_phone = models.CharField(max_length=50)
